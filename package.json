@@ -1,6 +1,6 @@
 {
   "name": "vue-vtk-js",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "Vue.js based declarative vtk.js visualization pipeline",
   "author": "Kitware Inc",
   "license": "BSD-3-Clause",
