@@ -3,8 +3,8 @@
     <vtk-view>
       <vtk-geometry-representation>
         <vtk-polydata
-          :points="[0,0,0,0,1,0,1,0,0]"
-          :polys="[3,0,1,2]"
+          :points="[0, 0, 0, 0, 1, 0, 1, 0, 0]"
+          :polys="[3, 0, 1, 2]"
         />
       </vtk-geometry-representation>
     </vtk-view>
@@ -13,7 +13,7 @@
 
 <script>
 export default {
-  name: "App",
+  name: 'App',
 };
 </script>
 
