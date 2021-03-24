@@ -1,17 +1,27 @@
-import VtkView from './core/VtkView';
-import VtkGeometryRepresentation from './core/VtkGeometryRepresentation';
-import VtkPolydata from './core/VtkPolydata';
-import VtkPointData from './core/VtkPointData';
+import VtkAlgorithm from './core/VtkAlgorithm';
+import VtkCalculator from './core/VtkCalculator';
 import VtkCellData from './core/VtkCellData';
-import VtkFieldData from './core/VtkFieldData';
 import VtkDataArray from './core/VtkDataArray';
+import VtkFieldData from './core/VtkFieldData';
+import VtkGeometryRepresentation from './core/VtkGeometryRepresentation';
+import VtkGlyphRepresentation from './core/VtkGlyphRepresentation';
+import VtkPointData from './core/VtkPointData';
+import VtkPolydata from './core/VtkPolydata';
+import VtkReader from './core/VtkReader';
+import VtkShareDataset from './core/VtkShareDataset';
+import VtkView from './core/VtkView';
 
 export default {
-  VtkView,
-  VtkGeometryRepresentation,
-  VtkPolydata,
-  VtkPointData,
+  VtkAlgorithm,
+  VtkCalculator,
   VtkCellData,
-  VtkFieldData,
   VtkDataArray,
+  VtkFieldData,
+  VtkGeometryRepresentation,
+  VtkGlyphRepresentation,
+  VtkPointData,
+  VtkPolydata,
+  VtkReader,
+  VtkShareDataset,
+  VtkView,
 };
