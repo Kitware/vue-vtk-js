@@ -42,17 +42,17 @@ export default {
   },
   methods: {
     connect() {
-      if (this.client) {
-        const session = this.client.getConnection().getSession();
+      if (this.wsClient) {
+        const session = this.wsClient.getConnection().getSession();
         this.view.setSession(session);
-        this.view.setViewId(this.viewId);
+        this.view.setViewId(this.id);
         this.connected = true;
         this.view.render();
       }
     },
   },
   watch: {
-    client() {
+    wsClient() {
       this.connect();
     },
     viewId(id) {
