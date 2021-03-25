@@ -33,6 +33,21 @@ export default {
 
     // Resize handling
     this.resizeObserver = new ResizeObserver(this.view.resize);
+
+    // Bind remote view method to component
+    this.resize = this.view.resize;
+    this.render = this.view.render;
+    this.resetCamera = this.view.resetCamera;
+    // -- set
+    this.setInteractiveQuality = this.view.setInteractiveQuality;
+    this.setInteractiveRatio = this.view.setInteractiveRatio;
+    this.setStillQuality = this.view.setStillQuality;
+    this.setStillRatio = this.view.setStillRatio;
+    // -- get
+    this.getInteractiveQuality = this.view.getInteractiveQuality;
+    this.getInteractiveRatio = this.view.getInteractiveRatio;
+    this.getStillQuality = this.view.getStillQuality;
+    this.getStillRatio = this.view.getStillRatio;
   },
   mounted() {
     const container = this.$refs.vtkContainer;
