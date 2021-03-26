@@ -31,9 +31,6 @@ export default {
       this.view.setInteractiveRatio(this.interactiveRatio);
     }
 
-    // Resize handling
-    this.resizeObserver = new ResizeObserver(this.view.resize);
-
     // Bind remote view method to component
     this.resize = this.view.resize;
     this.render = this.view.render;
@@ -52,7 +49,6 @@ export default {
   mounted() {
     const container = this.$refs.vtkContainer;
     this.view.setContainer(container);
-    this.resizeObserver.observe(container);
     this.connect();
   },
   methods: {
@@ -61,7 +57,13 @@ export default {
         const session = this.wsClient.getConnection().getSession();
         this.view.setSession(session);
         this.view.setViewId(this.id);
+        this.view.resize();
         this.connected = true;
+
+        // Resize handling
+        this.resizeObserver = new ResizeObserver(this.view.resize);
+        this.resizeObserver.observe(this.$refs.vtkContainer);
+
         this.view.render();
       }
     },
