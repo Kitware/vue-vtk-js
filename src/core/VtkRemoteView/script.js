@@ -13,9 +13,18 @@ export default {
     interactiveRatio: {
       type: Number,
     },
+    interactiveQuality: {
+      type: Number,
+    },
     enablePicking: {
       type: Boolean,
       default: false,
+    },
+    interactorEvents: {
+      type: Array,
+      default: () => [
+        'EndAnimation',
+      ],
     },
   },
   data() {
@@ -29,6 +38,9 @@ export default {
     });
     if (this.interactiveRatio) {
       this.view.setInteractiveRatio(this.interactiveRatio);
+    }
+    if (this.interactiveQuality) {
+      this.view.setInteractiveQuality(this.interactiveQuality);
     }
 
     // Bind remote view method to component
@@ -45,6 +57,13 @@ export default {
     this.getInteractiveRatio = this.view.getInteractiveRatio;
     this.getStillQuality = this.view.getStillQuality;
     this.getStillRatio = this.view.getStillRatio;
+
+    // Attach listeners
+    const interactor = this.view.getInteractor();
+    this.interactorEvents.forEach((name) => {
+      const key = `on${name}`;
+      interactor[key]((e) => this.$emit(key, e));
+    });
   },
   mounted() {
     const container = this.$refs.vtkContainer;

@@ -1,0 +1,32 @@
+<div style="position:relative;width:100%;height:100%;z-index:0;">
+  <vtk-sync-view
+    :id="id"
+    :wsClient="wsClient"
+    ref="localView"
+    :style="localStyle"
+
+    :camera="camera"
+    :interactorEvents="interactorEvents"
+    :interactorSettings="interactorSettings"
+    :contextName="contextName"
+
+    :viewState="get(sceneKey)"
+
+    @resetCamera="trigger(cameraKey, [$refs.localView.getCamera()])"
+    @onEndAnimation="trigger(cameraKey, [$refs.localView.getCamera()])"
+    @onReady="localRenderingReady = $event"
+
+    :interactiveRatio="interactiveRatio"
+  >
+    <slot></slot>
+  </vtk-sync-view>
+  <vtk-remote-view
+    :id="id"
+    :wsClient="wsClient"
+    ref="remoteView"
+    :style="remoteStyle"
+
+    @onEndAnimation="trigger(cameraKey)"
+  />
+
+</div>

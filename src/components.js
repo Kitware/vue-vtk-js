@@ -8,8 +8,10 @@ import VtkGlyphRepresentation from './core/VtkGlyphRepresentation';
 import VtkPointData from './core/VtkPointData';
 import VtkPolydata from './core/VtkPolydata';
 import VtkReader from './core/VtkReader';
+import VtkRemoteLocalView from './core/VtkRemoteLocalView';
 import VtkRemoteView from './core/VtkRemoteView';
 import VtkShareDataset from './core/VtkShareDataset';
+import VtkSyncView from './core/VtkSyncView';
 import VtkView from './core/VtkView';
 
 export default {
@@ -23,7 +25,9 @@ export default {
   VtkPointData,
   VtkPolydata,
   VtkReader,
+  VtkRemoteLocalView,
   VtkRemoteView,
   VtkShareDataset,
+  VtkSyncView,
   VtkView,
 };
