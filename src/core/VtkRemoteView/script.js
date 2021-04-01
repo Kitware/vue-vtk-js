@@ -31,8 +31,15 @@ export default {
     };
   },
   created() {
+    if (!this.wsClient) {
+      throw new Error('VtkRemoteView can not be created without a wsClient');
+    }
+
+    const viewStream = this.wsClient.getImageStream().createViewStream(this.id);
+
     this.view = vtkRemoteView.newInstance({
       rpcWheelEvent: 'viewport.mouse.zoom.wheel',
+      viewStream,
     });
     if (this.interactiveRatio) {
       this.view.setInteractiveRatio(this.interactiveRatio);
@@ -66,29 +73,20 @@ export default {
   mounted() {
     const container = this.$refs.vtkContainer;
     this.view.setContainer(container);
-    this.connect();
-  },
-  methods: {
-    connect() {
-      if (this.wsClient) {
-        const session = this.wsClient.getConnection().getSession();
-        this.view.setSession(session);
-        this.view.setViewId(this.id);
-        this.view.resize();
-        this.connected = true;
 
-        // Resize handling
-        this.resizeObserver = new ResizeObserver(this.view.resize);
-        this.resizeObserver.observe(this.$refs.vtkContainer);
+    const session = this.wsClient.getConnection().getSession();
+    this.view.setSession(session);
+    this.view.setViewId(this.id);
+    this.view.resize();
+    this.connected = true;
 
-        this.view.render();
-      }
-    },
+    // Resize handling
+    this.resizeObserver = new ResizeObserver(this.view.resize);
+    this.resizeObserver.observe(this.$refs.vtkContainer);
+
+    this.view.render();
   },
   watch: {
-    wsClient() {
-      this.connect();
-    },
     viewId(id) {
       if (this.connected) {
         this.view.setViewId(id);
