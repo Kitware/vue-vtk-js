@@ -47,9 +47,7 @@ function assignManipulators(style, settings) {
   settings.forEach((item) => {
     const klass = manipulatorFactory[item.action];
     if (klass) {
-      const {
-        button, shift, control, alt, scrollEnabled, dragEnabled,
-      } = item;
+      const { button, shift, control, alt, scrollEnabled, dragEnabled } = item;
       const manipulator = klass.newInstance();
       manipulator.setButton(button);
       manipulator.setShift(!!shift);
@@ -78,9 +76,7 @@ export default {
     },
     interactorEvents: {
       type: Array,
-      default: () => [
-        'EndAnimation',
-      ],
+      default: () => ['EndAnimation'],
     },
     interactorSettings: {
       type: Array,
@@ -145,7 +141,9 @@ export default {
         this.synchCtx.emptyCachedArrays();
       }
 
-      this.synchCtx = vtkSynchronizableRenderWindow.getSynchronizerContext(this.contextName);
+      this.synchCtx = vtkSynchronizableRenderWindow.getSynchronizerContext(
+        this.contextName
+      );
       this.synchCtx.setFetchArrayFunction(this.getArray);
     },
     viewState(remoteState) {
@@ -169,7 +167,9 @@ export default {
   created() {
     const { interactorSettings } = this;
 
-    const complete = () => { this.count -= 1; };
+    const complete = () => {
+      this.count -= 1;
+    };
     const busyWrap = async (promise) => {
       this.count += 1;
       const result = await promise;
@@ -182,18 +182,24 @@ export default {
       this.$nextTick(this.render);
       if (this.wsClient) {
         if (this.wsClient.getRemote().SyncView) {
-          return busyWrap(this.wsClient.getRemote().SyncView.getArray(hash, binary));
+          return busyWrap(
+            this.wsClient.getRemote().SyncView.getArray(hash, binary)
+          );
         }
         const session = this.wsClient?.getConnection()?.getSession();
         if (session) {
-          return busyWrap(session.call('viewport.geometry.array.get', [hash, binary]));
+          return busyWrap(
+            session.call('viewport.geometry.array.get', [hash, binary])
+          );
         }
       }
       return Promise.resolve(null);
     };
 
     // Create sync context
-    this.synchCtx = vtkSynchronizableRenderWindow.getSynchronizerContext(this.contextName);
+    this.synchCtx = vtkSynchronizableRenderWindow.getSynchronizerContext(
+      this.contextName
+    );
     this.synchCtx.setFetchArrayFunction(this.getArray);
 
     // Create vtk.js view
@@ -312,7 +318,9 @@ export default {
 
         if (remoteState.extra) {
           if (remoteState.extra.camera) {
-            this.remoteCamera = this.synchCtx.getInstance(remoteState.extra.camera);
+            this.remoteCamera = this.synchCtx.getInstance(
+              remoteState.extra.camera
+            );
             if (this.remoteCamera) {
               this.style.setCenterOfRotation(this.remoteCamera.getFocalPoint());
             }
@@ -335,7 +343,7 @@ export default {
 
         this.openglRenderWindow.setSize(
           Math.max(width, 10),
-          Math.max(height, 10),
+          Math.max(height, 10)
         );
         this.$nextTick(this.render);
         this.$emit('resize');
@@ -345,7 +353,7 @@ export default {
       if (this.renderer) {
         this.renderer.resetCamera();
         this.style.setCenterOfRotation(
-          this.renderer.getActiveCamera().getFocalPoint(),
+          this.renderer.getActiveCamera().getFocalPoint()
         );
         this.$nextTick(this.render);
         this.$emit('resetCamera');
@@ -355,7 +363,14 @@ export default {
       const centerOfRotation = this.style.getCenterOfRotation();
       return {
         centerOfRotation,
-        ...this.activeCamera.get('position', 'focalPoint', 'viewUp', 'parallelProjection', 'parallelScale', 'viewAngle'),
+        ...this.activeCamera.get(
+          'position',
+          'focalPoint',
+          'viewUp',
+          'parallelProjection',
+          'parallelScale',
+          'viewAngle'
+        ),
       };
     },
     setCamera(props) {

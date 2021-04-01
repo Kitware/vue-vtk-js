@@ -35,9 +35,7 @@ export default {
     },
     interactorEvents: {
       type: Array,
-      default: () => [
-        'EndAnimation',
-      ],
+      default: () => ['EndAnimation'],
     },
     interactorSettings: {
       type: Array,
@@ -90,10 +88,14 @@ export default {
   },
   computed: {
     localStyle() {
-      return this.mode === 'local' && this.localRenderingReady ? TOP_Z_INDEX : BOTTOM_Z_INDEX;
+      return this.mode === 'local' && this.localRenderingReady
+        ? TOP_Z_INDEX
+        : BOTTOM_Z_INDEX;
     },
     remoteStyle() {
-      return this.mode === 'remote' || !this.localRenderingReady ? TOP_Z_INDEX : BOTTOM_Z_INDEX;
+      return this.mode === 'remote' || !this.localRenderingReady
+        ? TOP_Z_INDEX
+        : BOTTOM_Z_INDEX;
     },
     sceneKey() {
       if (this.namespace) {
@@ -119,7 +121,5 @@ export default {
       return this.$refs.localView.setCamera(props);
     },
   },
-  inject: [
-    'get', 'set', 'trigger',
-  ],
+  inject: ['get', 'set', 'trigger'],
 };

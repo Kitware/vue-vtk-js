@@ -22,9 +22,7 @@ export default {
     },
     interactorEvents: {
       type: Array,
-      default: () => [
-        'EndAnimation',
-      ],
+      default: () => ['EndAnimation'],
     },
   },
   data() {
