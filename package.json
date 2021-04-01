@@ -10,7 +10,7 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "vue": "^2.6.11",
-    "vtk.js": "17.2.3"
+    "vtk.js": "17.2.4"
   },
   "scripts": {
     "serve": "vue-cli-service serve",
