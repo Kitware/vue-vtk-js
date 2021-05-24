@@ -97,17 +97,17 @@ export default {
         {
           button: 1,
           action: 'Pan',
-          shift: true,
-        },
-        {
-          button: 1,
-          action: 'Zoom',
           alt: true,
         },
         {
           button: 1,
           action: 'Zoom',
           control: true,
+        },
+        {
+          button: 1,
+          action: 'Select',
+          alt: true,
         },
         {
           button: 1,

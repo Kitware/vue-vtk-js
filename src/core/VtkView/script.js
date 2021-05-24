@@ -9,6 +9,9 @@ import vtkRenderWindowInteractor from 'vtk.js/Sources/Rendering/Core/RenderWindo
 import vtkRenderer from 'vtk.js/Sources/Rendering/Core/Renderer';
 import vtkInteractorStyleManipulator from 'vtk.js/Sources/Interaction/Style/InteractorStyleManipulator';
 
+import vtkBoundingBox from 'vtk.js/Sources/Common/DataModel/BoundingBox';
+import vtkCubeAxesActor from 'vtk.js/Sources/Rendering/Core/CubeAxesActor';
+
 // Style modes
 import vtkMouseCameraTrackballMultiRotateManipulator from 'vtk.js/Sources/Interaction/Manipulators/MouseCameraTrackballMultiRotateManipulator';
 import vtkMouseCameraTrackballPanManipulator from 'vtk.js/Sources/Interaction/Manipulators/MouseCameraTrackballPanManipulator';
@@ -17,6 +20,11 @@ import vtkMouseCameraTrackballRotateManipulator from 'vtk.js/Sources/Interaction
 import vtkMouseCameraTrackballZoomManipulator from 'vtk.js/Sources/Interaction/Manipulators/MouseCameraTrackballZoomManipulator';
 import vtkMouseCameraTrackballZoomToMouseManipulator from 'vtk.js/Sources/Interaction/Manipulators/MouseCameraTrackballZoomToMouseManipulator';
 import vtkGestureCameraManipulator from 'vtk.js/Sources/Interaction/Manipulators/GestureCameraManipulator';
+import vtkMouseBoxSelectorManipulator from 'vtk.js/Sources/Interaction/Manipulators/MouseBoxSelectorManipulator';
+
+// Picking handling
+import vtkOpenGLHardwareSelector from 'vtk.js/Sources/Rendering/OpenGL/HardwareSelector';
+import { FieldAssociations } from 'vtk.js/Sources/Common/DataModel/DataSet/Constants';
 
 // ----------------------------------------------------------------------------
 // Helper constants
@@ -30,9 +38,10 @@ const manipulatorFactory = {
   Rotate: vtkMouseCameraTrackballRotateManipulator,
   MultiRotate: vtkMouseCameraTrackballMultiRotateManipulator,
   ZoomToMouse: vtkMouseCameraTrackballZoomToMouseManipulator,
+  Select: vtkMouseBoxSelectorManipulator,
 };
 
-function assignManipulators(style, settings) {
+function assignManipulators(style, settings, view) {
   style.removeAllMouseManipulators();
   settings.forEach((item) => {
     const klass = manipulatorFactory[item.action];
@@ -50,6 +59,9 @@ function assignManipulators(style, settings) {
         manipulator.setDragEnabled(dragEnabled);
       }
       style.addMouseManipulator(manipulator);
+      if (manipulator.onBoxSelectChange && view.onBoxSelectChange) {
+        manipulator.onBoxSelectChange(view.onBoxSelectChange);
+      }
     }
   });
 
@@ -87,17 +99,17 @@ export default {
         {
           button: 1,
           action: 'Pan',
-          shift: true,
-        },
-        {
-          button: 1,
-          action: 'Zoom',
           alt: true,
         },
         {
           button: 1,
-          action: 'ZoomToMouse',
+          action: 'Zoom',
           control: true,
+        },
+        {
+          button: 1,
+          action: 'Select',
+          shift: true,
         },
         {
           button: 1,
@@ -106,6 +118,18 @@ export default {
           shift: true,
         },
       ],
+    },
+    pickingModes: {
+      type: Array,
+      default: () => [],
+    },
+    showCubeAxes: {
+      type: Boolean,
+      default: false,
+    },
+    cubeAxesStyle: {
+      type: Object,
+      default: () => ({}),
     },
   },
   watch: {
@@ -118,7 +142,15 @@ export default {
       this.$nextTick(this.render);
     },
     interactorSettings(v) {
-      assignManipulators(this.style, v);
+      assignManipulators(this.style, v, this);
+    },
+    showCubeAxes(v) {
+      this.cubeAxes.setVisibility(v);
+      this.$nextTick(this.render);
+    },
+    cubeAxesStyle(style) {
+      this.cubeAxes.set(style);
+      this.$nextTick(this.render);
     },
   },
   created() {
@@ -144,7 +176,16 @@ export default {
     // Interactor style
     this.style = vtkInteractorStyleManipulator.newInstance();
     this.interactor.setInteractorStyle(this.style);
-    assignManipulators(this.style, interactorSettings);
+    assignManipulators(this.style, interactorSettings, this);
+
+    // Picking handler
+    this.selector = vtkOpenGLHardwareSelector.newInstance({
+      captureZValues: true,
+    });
+    this.selector.setFieldAssociation(
+      FieldAssociations.FIELD_ASSOCIATION_POINTS
+    );
+    this.selector.attach(this.openglRenderWindow, this.renderer);
 
     // Resize handling
     this.resizeObserver = new ResizeObserver(() => this.onResize());
@@ -176,6 +217,88 @@ export default {
     this.onLeave = () => {
       this.hasFocus = false;
     };
+
+    // Cube axes
+    this.cubeAxes = vtkCubeAxesActor.newInstance({
+      dataBounds: [-1, 1, -1, 1, -1, 1],
+      visibility: false,
+    });
+    this.cubeAxes.setVisibility(false);
+    this.cubeAxes
+      .getActors()
+      .forEach(({ setVisibility }) => setVisibility(false));
+
+    this.cubeAxes.setCamera(this.activeCamera);
+    this.renderer.addActor(this.cubeAxes);
+
+    const bbox = vtkBoundingBox.newInstance({ bounds: [0, 0, 0, 0, 0, 0] });
+    this.updateCubeBounds = () => {
+      bbox.reset();
+      const { props } = this.renderer.get('props');
+      for (let i = 0; i < props.length; i++) {
+        const prop = props[i];
+        if (
+          prop.getVisibility() &&
+          prop.getUseBounds() &&
+          prop !== this.cubeAxes
+        ) {
+          bbox.addBounds(...prop.getBounds());
+        }
+      }
+      this.cubeAxes.setDataBounds(bbox.getBounds());
+    };
+    const debouncedCubeBounds = debounce(this.updateCubeBounds, 50);
+
+    this.subscriptions = [];
+    this.subscriptions.push(
+      this.renderer.onEvent(({ type, renderer }) => {
+        if (renderer && type === 'ComputeVisiblePropBoundsEvent') {
+          debouncedCubeBounds();
+        }
+      })
+    );
+
+    // Handle picking
+    const click = ({ x, y }) => {
+      if (!this.pickingModes.includes('click')) {
+        return;
+      }
+      const selection = this.pick(x, y, x, y);
+      this.$emit('click', selection[0]);
+    };
+
+    const hover = debounce(({ x, y }) => {
+      if (!this.pickingModes.includes('hover')) {
+        return;
+      }
+      const selection = this.pick(x, y, x, y);
+
+      // Guard against trigger of empty selection
+      if (this.lastSelection.length === 0 && selection.length === 0) {
+        return;
+      }
+      this.lastSelection = selection;
+
+      // Share the selection with the rest of the world
+      this.$emit('hover', selection[0]);
+    }, 10);
+
+    const select = ({ selection }) => {
+      if (!this.pickingModes.includes('select')) {
+        return;
+      }
+      const [x1, x2, y1, y2] = selection;
+      const pickResult = this.pick(x1, y1, x2, y2);
+
+      // Share the selection with the rest of the world
+      this.$emit('select', pickResult);
+    };
+
+    this.onClick = (e) => click(this.getScreenEventPositionFor(e));
+    this.onMouseMove = (e) => hover(this.getScreenEventPositionFor(e));
+    this.lastSelection = [];
+
+    this.onBoxSelectChange = select;
   },
   mounted() {
     const container = this.$refs.vtkContainer;
@@ -185,6 +308,9 @@ export default {
     this.resizeObserver.observe(container);
     document.addEventListener('keyup', this.handleKey);
     this.resetCamera();
+
+    // Give a chance for the first layout to properly reset the camera
+    setTimeout(() => this.resetCamera(), 100);
   },
   beforeUnmout() {
     document.removeEventListener('keyup', this.handleKey);
@@ -231,6 +357,89 @@ export default {
         this.renderer.getActiveCamera().getFocalPoint()
       );
       this.render();
+    },
+    getScreenEventPositionFor(source) {
+      const bounds = this.$refs.vtkContainer.getBoundingClientRect();
+      const [canvasWidth, canvasHeight] = this.openglRenderWindow.getSize();
+      const scaleX = canvasWidth / bounds.width;
+      const scaleY = canvasHeight / bounds.height;
+      const position = {
+        x: scaleX * (source.clientX - bounds.left),
+        y: scaleY * (bounds.height - source.clientY + bounds.top),
+        z: 0,
+      };
+      return position;
+    },
+    pick(x1, y1, x2, y2) {
+      this.selector.setArea(x1, y1, x2, y2);
+      this.previousSelectedData = null;
+      if (this.selector.captureBuffers()) {
+        this.selections = this.selector.generateSelection(x1, y1, x2, y2) || [];
+        if (x1 !== x2 || y1 !== y2) {
+          const frustrum = [
+            Array.from(
+              this.openglRenderWindow.displayToWorld(x1, y1, 0, this.renderer)
+            ),
+            Array.from(
+              this.openglRenderWindow.displayToWorld(x2, y1, 0, this.renderer)
+            ),
+            Array.from(
+              this.openglRenderWindow.displayToWorld(x2, y2, 0, this.renderer)
+            ),
+            Array.from(
+              this.openglRenderWindow.displayToWorld(x1, y2, 0, this.renderer)
+            ),
+            Array.from(
+              this.openglRenderWindow.displayToWorld(x1, y1, 1, this.renderer)
+            ),
+            Array.from(
+              this.openglRenderWindow.displayToWorld(x2, y1, 1, this.renderer)
+            ),
+            Array.from(
+              this.openglRenderWindow.displayToWorld(x2, y2, 1, this.renderer)
+            ),
+            Array.from(
+              this.openglRenderWindow.displayToWorld(x1, y2, 1, this.renderer)
+            ),
+          ];
+          const representationIds = [];
+          this.selections.forEach((v) => {
+            const { prop } = v.getProperties();
+            const { representationId } = prop.get('representationId');
+            if (representationId) {
+              representationIds.push(representationId);
+            }
+          });
+          return { frustrum, representationIds };
+        }
+        const ray = [
+          Array.from(
+            this.openglRenderWindow.displayToWorld(x1, y1, 0, this.renderer)
+          ),
+          Array.from(
+            this.openglRenderWindow.displayToWorld(x1, y1, 1, this.renderer)
+          ),
+        ];
+        return this.selections.map((v) => {
+          const { prop, compositeID, displayPosition } = v.getProperties();
+
+          return {
+            worldPosition: Array.from(
+              this.openglRenderWindow.displayToWorld(
+                displayPosition[0],
+                displayPosition[1],
+                displayPosition[2],
+                this.renderer
+              )
+            ),
+            displayPosition,
+            compositeID, // Not yet useful unless GlyphRepresentation
+            ...prop.get('representationId'),
+            ray,
+          };
+        });
+      }
+      return [];
     },
   },
   provide() {

@@ -1,6 +1,8 @@
 import vtkDataArray from 'vtk.js/Sources/Common/Core/DataArray';
 import { TYPED_ARRAYS, debounce } from 'vtk.js/Sources/macro';
 
+import { toTypedArray } from '../../utils';
+
 export default {
   name: 'VtkDataArray',
   props: {
@@ -48,7 +50,7 @@ export default {
     this.updateArrayValues = debounce(() => {
       const { type, values, numberOfComponents } = this;
       const klass = TYPED_ARRAYS[type];
-      this.array.setData(klass.from(values), numberOfComponents);
+      this.array.setData(toTypedArray(values, klass), numberOfComponents);
 
       if (this.dataset) {
         this.dataset.modified();

@@ -1,6 +1,20 @@
 import { debounce } from 'vtk.js/Sources/macro';
 import vtkPolyData from 'vtk.js/Sources/Common/DataModel/PolyData';
 
+import { toTypedArray } from '../../utils';
+
+const POINTS_TYPES = [Array, Float32Array, Float64Array, Object];
+const CELLS_TYPES = [
+  Array,
+  Uint8Array,
+  Uint16Array,
+  Uint32Array,
+  Int8Array,
+  Int16Array,
+  Int32Array,
+  Object,
+];
+
 export default {
   name: 'VtkPolydata',
   props: {
@@ -9,24 +23,19 @@ export default {
       default: 0,
     },
     points: {
-      type: Array,
-      default: () => [],
+      type: POINTS_TYPES,
     },
     verts: {
-      type: Array,
-      default: () => [],
+      type: CELLS_TYPES,
     },
     lines: {
-      type: Array,
-      default: () => [],
+      type: CELLS_TYPES,
     },
     polys: {
-      type: Array,
-      default: () => [],
+      type: CELLS_TYPES,
     },
     strips: {
-      type: Array,
-      default: () => [],
+      type: CELLS_TYPES,
     },
     connectivity: {
       type: String,
@@ -112,19 +121,19 @@ export default {
     }, 1);
   },
   mounted() {
-    if (this.points.length) {
+    if (this.points) {
       this.updatePoints(this.points);
     }
-    if (this.verts.length) {
+    if (this.verts) {
       this.updateVerts(this.verts);
     }
-    if (this.lines.length) {
+    if (this.lines) {
       this.updateLines(this.lines);
     }
-    if (this.polys.length) {
+    if (this.polys) {
       this.updatePolys(this.polys);
     }
-    if (this.strips.length) {
+    if (this.strips) {
       this.updateStrips(this.strips);
     }
     this.downstream.setInputData(this.polydata);
@@ -135,27 +144,27 @@ export default {
   },
   methods: {
     updatePoints(v) {
-      const typedArray = Array.isArray(v) ? Float64Array.from(v) : v;
+      const typedArray = toTypedArray(v, Float64Array);
       this.polydata.getPoints().setData(typedArray, 3);
       this.updatePolyData();
     },
     updateVerts(v) {
-      const typedArray = Array.isArray(v) ? this.cellTypedArray.from(v) : v;
+      const typedArray = toTypedArray(v, this.cellTypedArray);
       this.polydata.getVerts().setData(typedArray);
       this.updatePolyData();
     },
     updateLines(v) {
-      const typedArray = Array.isArray(v) ? this.cellTypedArray.from(v) : v;
+      const typedArray = toTypedArray(v, this.cellTypedArray);
       this.polydata.getLines().setData(typedArray);
       this.updatePolyData();
     },
     updatePolys(v) {
-      const typedArray = Array.isArray(v) ? this.cellTypedArray.from(v) : v;
+      const typedArray = toTypedArray(v, this.cellTypedArray);
       this.polydata.getPolys().setData(typedArray);
       this.updatePolyData();
     },
     updateStrips(v) {
-      const typedArray = Array.isArray(v) ? this.cellTypedArray.from(v) : v;
+      const typedArray = toTypedArray(v, this.cellTypedArray);
       this.polydata.getStrips().setData(typedArray);
       this.updatePolyData();
     },
