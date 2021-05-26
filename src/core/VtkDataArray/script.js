@@ -19,8 +19,18 @@ export default {
       default: 'Float32Array',
     },
     values: {
-      type: Array,
-      default: () => [],
+      type: [
+        Array,
+        Object,
+        Uint8Array,
+        Uint16Array,
+        Uint32Array,
+        Int8Array,
+        Int16Array,
+        Int32Array,
+        Float32Array,
+        Float64Array,
+      ],
     },
     numberOfComponents: {
       type: Number,
@@ -68,7 +78,7 @@ export default {
     if (this.name) {
       this.array.setName(this.name);
     }
-    if (this.values.length) {
+    if (this.values && (this.values.bvals || this.values.length)) {
       this.updateArrayValues();
     }
   },

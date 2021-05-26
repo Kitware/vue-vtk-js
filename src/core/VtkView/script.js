@@ -379,29 +379,37 @@ export default {
         this.selections = this.selector.generateSelection(x1, y1, x2, y2) || [];
         if (x1 !== x2 || y1 !== y2) {
           const frustrum = [
+            // near lower-left
             Array.from(
               this.openglRenderWindow.displayToWorld(x1, y1, 0, this.renderer)
             ),
-            Array.from(
-              this.openglRenderWindow.displayToWorld(x2, y1, 0, this.renderer)
-            ),
-            Array.from(
-              this.openglRenderWindow.displayToWorld(x2, y2, 0, this.renderer)
-            ),
-            Array.from(
-              this.openglRenderWindow.displayToWorld(x1, y2, 0, this.renderer)
-            ),
+            // far lower-left
             Array.from(
               this.openglRenderWindow.displayToWorld(x1, y1, 1, this.renderer)
             ),
+            // near upper-left
+            Array.from(
+              this.openglRenderWindow.displayToWorld(x1, y2, 0, this.renderer)
+            ),
+            // far upper-left
+            Array.from(
+              this.openglRenderWindow.displayToWorld(x1, y2, 1, this.renderer)
+            ),
+            // near lower-right
+            Array.from(
+              this.openglRenderWindow.displayToWorld(x2, y1, 0, this.renderer)
+            ),
+            // far lower-right
             Array.from(
               this.openglRenderWindow.displayToWorld(x2, y1, 1, this.renderer)
             ),
+            // near upper-right
+            Array.from(
+              this.openglRenderWindow.displayToWorld(x2, y2, 0, this.renderer)
+            ),
+            // far upper-right
             Array.from(
               this.openglRenderWindow.displayToWorld(x2, y2, 1, this.renderer)
-            ),
-            Array.from(
-              this.openglRenderWindow.displayToWorld(x1, y2, 1, this.renderer)
             ),
           ];
           const representationIds = [];

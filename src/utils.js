@@ -11,6 +11,22 @@ const NUMPY_DTYPES = {
   float64: Float64Array,
 };
 
+export function printInfo(typedArray) {
+  let min = typedArray[0];
+  let max = typedArray[0];
+  for (let i = 0; i < typedArray.length; i++) {
+    const v = typedArray[i];
+    if (v < min) {
+      min = v;
+    }
+    if (v > max) {
+      max = v;
+    }
+  }
+  console.log('data Range', min, max);
+  return typedArray;
+}
+
 export function toTypedArray(values, TypedArray) {
   if (!values) {
     return null;

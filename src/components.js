@@ -5,6 +5,7 @@ import VtkDataArray from './core/VtkDataArray';
 import VtkFieldData from './core/VtkFieldData';
 import VtkGeometryRepresentation from './core/VtkGeometryRepresentation';
 import VtkGlyphRepresentation from './core/VtkGlyphRepresentation';
+import VtkMesh from './core/VtkMesh';
 import VtkPointData from './core/VtkPointData';
 import VtkPolydata from './core/VtkPolydata';
 import VtkReader from './core/VtkReader';
@@ -22,6 +23,7 @@ export default {
   VtkFieldData,
   VtkGeometryRepresentation,
   VtkGlyphRepresentation,
+  VtkMesh,
   VtkPointData,
   VtkPolydata,
   VtkReader,

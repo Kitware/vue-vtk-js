@@ -6,6 +6,9 @@ import vtkColorTransferFunction from 'vtk.js/Sources/Rendering/Core/ColorTransfe
 export default {
   name: 'VtkGeometryRepresentation',
   props: {
+    id: {
+      type: String,
+    },
     colorMapPreset: {
       type: String,
       default: 'erdc_rainbow_bright',
@@ -20,13 +23,22 @@ export default {
   },
   watch: {
     actor(v) {
-      this.representation.actor.set(v);
+      if (this.representation.actor.set(v)) {
+        this.representation.dataChanged();
+      }
+    },
+    id(representationId) {
+      this.representation.actor.set({ representationId }, true);
     },
     mapper(v) {
-      this.representation.mapper.set(v);
+      if (this.representation.mapper.set(v)) {
+        this.representation.dataChanged();
+      }
     },
     property(v) {
-      this.representation.property.set(v);
+      if (this.representation.property.set(v)) {
+        this.representation.dataChanged();
+      }
     },
     colorMapPreset() {
       this.updateColorPreset();
@@ -56,6 +68,7 @@ export default {
     ['actor', 'mapper', 'property'].forEach((name) => {
       this.representation[name].set(this[name]);
     });
+    this.representation.actor.set({ representationId: this.id }, true);
 
     // Initial update
     this.updateColorPreset();
