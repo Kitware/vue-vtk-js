@@ -176,7 +176,6 @@ export default {
     // Interactor style
     this.style = vtkInteractorStyleManipulator.newInstance();
     this.interactor.setInteractorStyle(this.style);
-    assignManipulators(this.style, interactorSettings, this);
 
     // Picking handler
     this.selector = vtkOpenGLHardwareSelector.newInstance({
@@ -299,6 +298,9 @@ export default {
     this.lastSelection = [];
 
     this.onBoxSelectChange = select;
+
+    // Configure interaction once 'this' is fully setup
+    assignManipulators(this.style, interactorSettings, this);
   },
   mounted() {
     const container = this.$refs.vtkContainer;
