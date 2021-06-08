@@ -38,7 +38,7 @@ export default {
     this.reader = vtk({ vtkClass });
     this.downstream.setInputConnection(this.reader.getOutputPort(), this.port);
   },
-  beforeUnmount() {
+  beforeDestroy() {
     this.reader.delete();
     this.reader = null;
   },

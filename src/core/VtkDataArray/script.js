@@ -82,7 +82,7 @@ export default {
       this.updateArrayValues();
     }
   },
-  beforeUnmount() {
+  beforeDestroy() {
     this.fields.removeArray(this.array);
     this.array.delete();
     this.array = null;

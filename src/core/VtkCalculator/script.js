@@ -44,7 +44,7 @@ export default {
       this.port
     );
   },
-  beforeUnmount() {
+  beforeDestroy() {
     this.calculator.delete();
     this.calculator = null;
   },

@@ -24,7 +24,7 @@ export default {
     this.algo = vtk({ vtkClass, ...state });
     this.downstream.setInputConnection(this.algo.getOutputPort(), this.port);
   },
-  beforeUnmount() {
+  beforeDestroy() {
     this.algo.delete();
     this.algo = null;
   },

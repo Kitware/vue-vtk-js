@@ -138,7 +138,7 @@ export default {
     }
     this.downstream.setInputData(this.polydata);
   },
-  beforeUnmount() {
+  beforeDestroy() {
     this.polydata.delete();
     this.polydata = null;
   },

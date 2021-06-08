@@ -63,7 +63,7 @@ export default {
     // Use parent inject
     this.view.renderer.addActor(this.representation.actor);
   },
-  beforeUnmount() {
+  beforeDestroy() {
     this.view.renderer.removeActor(this.representation.actor);
 
     this.representation.actor.delete();
