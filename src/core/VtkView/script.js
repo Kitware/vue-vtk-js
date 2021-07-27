@@ -358,13 +358,15 @@ export default {
     onResize() {
       const container = this.$refs.vtkContainer;
       if (container) {
+        const devicePixelRatio = window.devicePixelRatio || 1;
         const { width, height } = container.getBoundingClientRect();
 
         this.openglRenderWindow.setSize(
-          Math.max(width, 10),
-          Math.max(height, 10)
+          Math.floor(Math.max(width * devicePixelRatio, 10)),
+          Math.floor(Math.max(height * devicePixelRatio, 10))
         );
-        this.renderWindow.render();
+        this.$nextTick(this.render);
+        this.$emit('resize');
       }
     },
     resetCamera() {
