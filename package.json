@@ -9,8 +9,8 @@
   "unpkg": "./dist/vue-vtk.umd.min.js",
   "dependencies": {
     "core-js": "^3.6.5",
-    "vue": "^2.6.11",
-    "vtk.js": "18.1.2"
+    "vtk.js": "19.0.1",
+    "vue": "^2.6.11"
   },
   "scripts": {
     "serve": "vue-cli-service serve",

@@ -246,13 +246,13 @@ export default {
       }
       this.cubeAxes.setDataBounds(bbox.getBounds());
     };
-    const debouncedCubeBounds = debounce(this.updateCubeBounds, 50);
+    this.debouncedCubeBounds = debounce(this.updateCubeBounds, 50);
 
     this.subscriptions = [];
     this.subscriptions.push(
       this.renderer.onEvent(({ type, renderer }) => {
         if (renderer && type === 'ComputeVisiblePropBoundsEvent') {
-          debouncedCubeBounds();
+          this.debouncedCubeBounds();
         }
       })
     );
@@ -266,7 +266,7 @@ export default {
       this.$emit('click', selection[0]);
     };
 
-    const hover = debounce(({ x, y }) => {
+    this.debouncedHover = debounce(({ x, y }) => {
       if (!this.pickingModes.includes('hover')) {
         return;
       }
@@ -294,7 +294,7 @@ export default {
     };
 
     this.onClick = (e) => click(this.getScreenEventPositionFor(e));
-    this.onMouseMove = (e) => hover(this.getScreenEventPositionFor(e));
+    this.onMouseMove = (e) => this.debouncedHover(this.getScreenEventPositionFor(e));
     this.lastSelection = [];
 
     this.onBoxSelectChange = select;
@@ -312,10 +312,24 @@ export default {
     this.resetCamera();
 
     // Give a chance for the first layout to properly reset the camera
-    setTimeout(() => this.resetCamera(), 100);
+    this.resetCameraTimeout = setTimeout(() => this.resetCamera(), 100);
   },
   beforeUnmout() {
+    // Clear any pending action
+    if (this.debouncedCubeBounds) {
+      this.debouncedCubeBounds.cancel();
+    }
+    if (this.debouncedHover) {
+      this.debouncedHover.cancel();
+    }
+    if (this.render) {
+      this.render.cancel();
+    }
+    clearTimeout(this.resetCameraTimeout);
+
+    // Remove key listener
     document.removeEventListener('keyup', this.handleKey);
+
     // Stop size listening
     this.resizeObserver.disconnect();
     this.resizeObserver = null;

@@ -44,6 +44,11 @@ export default {
   },
   methods: {
     updateAfterDataLoaded() {
+      // Exit early if object destroyed
+      if (!this.reader) {
+        return;
+      }
+
       if (this.representation) {
         this.representation.dataChanged();
       }
