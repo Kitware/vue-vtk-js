@@ -9,7 +9,7 @@
   "unpkg": "./dist/vue-vtk.umd.min.js",
   "dependencies": {
     "core-js": "^3.6.5",
-    "vtk.js": "19.0.1",
+    "vtk.js": "19.0.2",
     "vue": "^2.6.11"
   },
   "scripts": {
