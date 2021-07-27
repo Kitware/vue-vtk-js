@@ -274,6 +274,9 @@ export default {
     }
   },
   beforeUnmout() {
+    // Clear any pending render...
+    this.render.cancel();
+
     document.removeEventListener('keyup', this.handleKey);
     // Stop size listening
     this.resizeObserver.disconnect();
@@ -300,7 +303,7 @@ export default {
     this.openglRenderWindow = null;
   },
   methods: {
-    updateViewState(remoteState) {
+    async updateViewState(remoteState) {
       // Fo debug
       // console.log(JSON.stringify(remoteState, null, 2));
 
@@ -309,13 +312,21 @@ export default {
       this.count = 1;
       // eslint-disable-next-line
       remoteState.mtime = this.mtime;
+      const progress = this.renderWindow.synchronize(remoteState);
 
-      if (this.renderWindow.synchronize(remoteState)) {
+      // Bind camera as soon as possible
+      if (progress) {
         if (this.renderWindow.getRenderersByReference().length) {
           [this.renderer] = this.renderWindow.getRenderersByReference();
           this.activeCamera = this.renderer.getActiveCamera();
         }
+        if (remoteState.extra && remoteState.extra.camera && this.activeCamera) {
+          this.synchCtx.registerInstance(remoteState.extra.camera, this.activeCamera);
+        }
+      }
 
+      const success = await progress;
+      if (success) {
         if (remoteState.extra) {
           if (remoteState.extra.camera) {
             this.remoteCamera = this.synchCtx.getInstance(
@@ -334,16 +345,18 @@ export default {
         this.$nextTick(this.render);
         this.$emit('viewStateChange', remoteState);
         this.count -= 1;
+        this.$emit('ready');
       }
     },
     onResize() {
       const container = this.$refs.vtkContainer;
       if (container) {
+        const devicePixelRatio = window.devicePixelRatio || 1;
         const { width, height } = container.getBoundingClientRect();
 
         this.openglRenderWindow.setSize(
-          Math.max(width, 10),
-          Math.max(height, 10)
+          Math.floor(Math.max(width * devicePixelRatio, 10)),
+          Math.floor(Math.max(height * devicePixelRatio, 10))
         );
         this.$nextTick(this.render);
         this.$emit('resize');
