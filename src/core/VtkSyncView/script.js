@@ -320,8 +320,15 @@ export default {
           [this.renderer] = this.renderWindow.getRenderersByReference();
           this.activeCamera = this.renderer.getActiveCamera();
         }
-        if (remoteState.extra && remoteState.extra.camera && this.activeCamera) {
-          this.synchCtx.registerInstance(remoteState.extra.camera, this.activeCamera);
+        if (
+          remoteState.extra &&
+          remoteState.extra.camera &&
+          this.activeCamera
+        ) {
+          this.synchCtx.registerInstance(
+            remoteState.extra.camera,
+            this.activeCamera
+          );
         }
       }
 

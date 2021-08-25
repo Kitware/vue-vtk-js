@@ -294,7 +294,8 @@ export default {
     };
 
     this.onClick = (e) => click(this.getScreenEventPositionFor(e));
-    this.onMouseMove = (e) => this.debouncedHover(this.getScreenEventPositionFor(e));
+    this.onMouseMove = (e) =>
+      this.debouncedHover(this.getScreenEventPositionFor(e));
     this.lastSelection = [];
 
     this.onBoxSelectChange = select;
