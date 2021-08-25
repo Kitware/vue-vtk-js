@@ -99,13 +99,13 @@ export default {
     },
     sceneKey() {
       if (this.namespace) {
-        return `${this.namespace}.scene`;
+        return `${this.namespace}Scene`;
       }
       return 'scene';
     },
     cameraKey() {
       if (this.namespace) {
-        return `${this.namespace}.camera`;
+        return `${this.namespace}Camera`;
       }
       return 'camera';
     },
