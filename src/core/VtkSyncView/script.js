@@ -273,7 +273,7 @@ export default {
       this.updateViewState(this.viewState);
     }
   },
-  beforeUnmout() {
+  beforeUnmount() {
     // Clear any pending render...
     this.render.cancel();
 
