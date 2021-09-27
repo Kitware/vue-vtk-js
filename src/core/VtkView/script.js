@@ -315,7 +315,7 @@ export default {
     // Give a chance for the first layout to properly reset the camera
     this.resetCameraTimeout = setTimeout(() => this.resetCamera(), 100);
   },
-  beforeUnmout() {
+  beforeUnmount() {
     // Clear any pending action
     if (this.debouncedCubeBounds) {
       this.debouncedCubeBounds.cancel();
