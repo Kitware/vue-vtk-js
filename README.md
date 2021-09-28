@@ -1,7 +1,7 @@
 # vue-vtk-js
 
 Vue.js based declarative vtk.js visualization pipeline.
-In other words this project allow you to leverage vtk.js using Vue component syntax to describe your 3D scene. Kind of like X3dom with the X3D format except that here we leverage React components that could be extended to build your own tools.
+In other words this project allow you to leverage vtk.js using Vue component syntax to describe your 3D scene. Kind of like X3dom with the X3D format except that here we leverage Vue components that could be extended to build your own tools.
 
 ## Usage
 
