@@ -2,9 +2,7 @@
 // => this is required because of tree shacking
 
 // Rendering profiles
-import 'vtk.js/Sources/Rendering/OpenGL/Profiles/Geometry';
-import 'vtk.js/Sources/Rendering/OpenGL/Profiles/Glyph';
-import 'vtk.js/Sources/Rendering/OpenGL/Profiles/Molecule';
+import 'vtk.js/Sources/Rendering/OpenGL/Profiles/All';
 
 // Data access helper
 import 'vtk.js/Sources/IO/Core/DataAccessHelper/HttpDataAccessHelper';
