@@ -11,10 +11,16 @@ export default {
       type: Object,
     },
     interactiveRatio: {
-      type: Number,
+      type: [Number, String],
     },
     interactiveQuality: {
-      type: Number,
+      type: [Number, String],
+    },
+    stillRatio: {
+      type: [Number, String],
+    },
+    stillQuality: {
+      type: [Number, String],
     },
     enablePicking: {
       type: Boolean,
@@ -42,10 +48,16 @@ export default {
       viewStream,
     });
     if (this.interactiveRatio) {
-      this.view.setInteractiveRatio(this.interactiveRatio);
+      this.view.setInteractiveRatio(Number(this.interactiveRatio));
     }
     if (this.interactiveQuality) {
-      this.view.setInteractiveQuality(this.interactiveQuality);
+      this.view.setInteractiveQuality(Number(this.interactiveQuality));
+    }
+    if (this.stillRatio) {
+      this.view.setStillRatio(Number(this.stillRatio));
+    }
+    if (this.stillQuality) {
+      this.view.setStillQuality(Number(this.stillQuality));
     }
 
     // Bind remote view method to component
@@ -97,7 +109,16 @@ export default {
       this.view.getInteractorStyle().setSendMouseMove(value);
     },
     interactiveRatio(value) {
-      this.view.setInteractiveRatio(value);
+      this.view.setInteractiveRatio(Number(value));
+    },
+    interactiveQuality(value) {
+      this.view.setInteractiveQuality(Number(value));
+    },
+    stillRatio(value) {
+      this.view.setStillRatio(Number(value));
+    },
+    stillQuality(value) {
+      this.view.setStillQuality(Number(value));
     },
   },
   beforeDestroy() {

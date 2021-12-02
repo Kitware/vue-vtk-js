@@ -27,7 +27,16 @@ export default {
       type: Object,
     },
     interactiveRatio: {
-      type: Number,
+      type: [Number, String],
+    },
+    interactiveQuality: {
+      type: [Number, String],
+    },
+    stillRatio: {
+      type: [Number, String],
+    },
+    stillQuality: {
+      type: [Number, String],
     },
     camera: {
       type: Object,
@@ -83,7 +92,7 @@ export default {
   },
   data() {
     return {
-      localRenderingReady: true,
+      localRenderingReady: false,
     };
   },
   computed: {
@@ -111,6 +120,10 @@ export default {
     },
   },
   methods: {
+    getViewState() {
+      const scene = this.get(this.sceneKey);
+      return scene;
+    },
     resetCamera() {
       return this.$refs.localView.resetCamera();
     },

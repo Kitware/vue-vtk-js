@@ -304,6 +304,7 @@ export default {
   },
   methods: {
     async updateViewState(remoteState) {
+      this.$emit('beforeSceneLoaded');
       // Fo debug
       // console.log(JSON.stringify(remoteState, null, 2));
 
@@ -352,7 +353,7 @@ export default {
         this.$nextTick(this.render);
         this.$emit('viewStateChange', remoteState);
         this.count -= 1;
-        this.$emit('ready');
+        this.$emit('afterSceneLoaded');
       }
     },
     onResize() {

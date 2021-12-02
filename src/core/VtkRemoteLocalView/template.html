@@ -10,13 +10,12 @@
     :interactorSettings="interactorSettings"
     :contextName="contextName"
 
-    :viewState="get(sceneKey)"
+    :viewState="getViewState()"
 
     @resetCamera="trigger(cameraKey, [$refs.localView.getCamera()])"
     @onEndAnimation="trigger(cameraKey, [$refs.localView.getCamera()])"
+    @beforeSceneLoaded="localRenderingReady = false"
     @onReady="localRenderingReady = $event"
-
-    :interactiveRatio="interactiveRatio"
   >
     <slot></slot>
   </vtk-sync-view>
@@ -27,6 +26,11 @@
     :style="remoteStyle"
 
     @onEndAnimation="trigger(cameraKey)"
+
+    :interactiveRatio="interactiveRatio"
+    :interactiveQuality="interactiveQuality"
+    :stillRatio="stillRatio"
+    :stillQuality="stillQuality"
   />
 
 </div>

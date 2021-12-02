@@ -31,5 +31,6 @@ export default {
   VtkRemoteView,
   VtkShareDataset,
   VtkSyncView,
+  VtkLocalView: VtkSyncView,
   VtkView,
 };
