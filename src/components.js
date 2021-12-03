@@ -15,6 +15,8 @@ import VtkShareDataset from './core/VtkShareDataset';
 import VtkSyncView from './core/VtkSyncView';
 import VtkView from './core/VtkView';
 
+import VtkPiecewiseEditor from './widgets/PiecewiseEditor';
+
 export default {
   VtkAlgorithm,
   VtkCalculator,
@@ -33,4 +35,5 @@ export default {
   VtkSyncView,
   VtkLocalView: VtkSyncView,
   VtkView,
+  VtkPiecewiseEditor,
 };
