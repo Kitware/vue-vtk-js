@@ -304,6 +304,9 @@ export default {
   },
   methods: {
     async updateViewState(remoteState) {
+      // console.time('updateViewState');
+      this.renderWindow.getInteractor().setEnableRender(false);
+
       this.$emit('beforeSceneLoaded');
       // Fo debug
       // console.log(JSON.stringify(remoteState, null, 2));
@@ -354,6 +357,9 @@ export default {
         this.$emit('viewStateChange', remoteState);
         this.count -= 1;
         this.$emit('afterSceneLoaded');
+
+        // console.timeEnd('updateViewState');
+        this.renderWindow.getInteractor().setEnableRender(true);
       }
     },
     onResize() {
