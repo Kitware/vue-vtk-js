@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div style="padding: 50px; height: 400px;">
+    <div style="padding: 50px; height: 400px">
       <piecewise-editor v-model="pwData" @opacities="opacities = $event" />
       <!-- <svg viewBox="0 0 1024 100">
         <circle

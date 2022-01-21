@@ -1,4 +1,6 @@
 import vtkRemoteView from 'vtk.js/Sources/Rendering/Misc/RemoteView';
+import vtkMouseBoxSelectorManipulator from 'vtk.js/Sources/Interaction/Manipulators/MouseBoxSelectorManipulator';
+import vtkInteractorStyleManipulator from 'vtk.js/Sources/Interaction/Style/InteractorStyleManipulator';
 
 export default {
   name: 'VtkRemoteView',
@@ -29,6 +31,10 @@ export default {
     interactorEvents: {
       type: Array,
       default: () => ['EndAnimation'],
+    },
+    boxSelection: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -77,14 +83,38 @@ export default {
 
     // Attach listeners
     const interactor = this.view.getInteractor();
+    this.subscriptions = [];
     this.interactorEvents.forEach((name) => {
       const key = `on${name}`;
-      interactor[key]((e) => this.$emit(key, e));
+      this.subscriptions.push(interactor[key]((e) => this.$emit(key, e)));
     });
+
+    // Box selection
+    this.interactorManipulator = vtkInteractorStyleManipulator.newInstance({
+      enabled: this.boxSelection,
+    });
+    this.interactorBoxSelection = vtkMouseBoxSelectorManipulator.newInstance({
+      button: 1,
+    });
+    this.interactorManipulator.addMouseManipulator(this.interactorBoxSelection);
+    this.subscriptions.push(
+      this.interactorBoxSelection.onBoxSelectChange(
+        ({ container, selection }) => {
+          const { width, height } = container.getBoundingClientRect();
+          this.$emit('BoxSelection', {
+            selection,
+            size: [width, height],
+            mode: 'remote',
+          });
+        }
+      )
+    );
+    this.interactorManipulator.setInteractor(interactor);
   },
   mounted() {
     const container = this.$refs.vtkContainer;
     this.view.setContainer(container);
+    this.interactorBoxSelection.setContainer(container);
 
     const session = this.wsClient.getConnection().getSession();
     this.view.setSession(session);
@@ -120,12 +150,23 @@ export default {
     stillQuality(value) {
       this.view.setStillQuality(Number(value));
     },
+    boxSelection(v) {
+      this.interactorManipulator.setEnabled(v);
+    },
   },
   beforeDestroy() {
     // Stop size listening
     this.resizeObserver.disconnect();
     this.resizeObserver = null;
 
+    while (this.subscriptions.length) {
+      this.subscriptions.pop().unsubscribe();
+    }
+    this.interactorManipulator.setEnabled(false);
+    this.interactorManipulator.delete();
+    this.interactorManipulator = null;
+    this.interactorBoxSelection.delete();
+    this.interactorBoxSelection = null;
     this.view.delete();
     this.view = null;
   },
