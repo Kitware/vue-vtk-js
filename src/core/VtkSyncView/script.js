@@ -18,6 +18,7 @@ import vtkMouseCameraTrackballRotateManipulator from 'vtk.js/Sources/Interaction
 import vtkMouseCameraTrackballZoomManipulator from 'vtk.js/Sources/Interaction/Manipulators/MouseCameraTrackballZoomManipulator';
 import vtkMouseCameraTrackballZoomToMouseManipulator from 'vtk.js/Sources/Interaction/Manipulators/MouseCameraTrackballZoomToMouseManipulator';
 import vtkGestureCameraManipulator from 'vtk.js/Sources/Interaction/Manipulators/GestureCameraManipulator';
+import vtkMouseBoxSelectorManipulator from 'vtk.js/Sources/Interaction/Manipulators/MouseBoxSelectorManipulator';
 
 // ----------------------------------------------------------------------------
 // Helper constants
@@ -40,9 +41,10 @@ const manipulatorFactory = {
   Rotate: vtkMouseCameraTrackballRotateManipulator,
   MultiRotate: vtkMouseCameraTrackballMultiRotateManipulator,
   ZoomToMouse: vtkMouseCameraTrackballZoomToMouseManipulator,
+  Select: vtkMouseBoxSelectorManipulator,
 };
 
-function assignManipulators(style, settings) {
+function assignManipulators(style, settings, view) {
   style.removeAllMouseManipulators();
   settings.forEach((item) => {
     const klass = manipulatorFactory[item.action];
@@ -60,6 +62,9 @@ function assignManipulators(style, settings) {
         manipulator.setDragEnabled(dragEnabled);
       }
       style.addMouseManipulator(manipulator);
+      if (manipulator.onBoxSelectChange && view.onBoxSelectChange) {
+        manipulator.onBoxSelectChange(view.onBoxSelectChange);
+      }
     }
   });
 
@@ -107,7 +112,7 @@ export default {
         {
           button: 1,
           action: 'Select',
-          alt: true,
+          shift: true,
         },
         {
           button: 1,
@@ -126,6 +131,10 @@ export default {
     },
     viewState: {
       type: Object,
+    },
+    boxSelection: {
+      type: Boolean,
+      default: false,
     },
   },
   watch: {
@@ -225,7 +234,6 @@ export default {
     // Interactor style
     this.style = vtkInteractorStyleManipulator.newInstance();
     this.interactor.setInteractorStyle(this.style);
-    assignManipulators(this.style, interactorSettings);
 
     // Resize handling
     this.resizeObserver = new ResizeObserver(() => this.onResize());
@@ -259,6 +267,23 @@ export default {
     this.onLeave = () => {
       this.hasFocus = false;
     };
+
+    this.onBoxSelectChange = ({ container, selection }) => {
+      if (!this.boxSelection) {
+        return;
+      }
+      // Share the selection with the rest of the world
+      const { width, height } = container.getBoundingClientRect();
+      this.$emit('BoxSelection', {
+        selection,
+        mode: 'local',
+        size: [width, height],
+        camera: this.getCamera(),
+      });
+    };
+
+    // Configure interaction once 'this' is fully setup
+    assignManipulators(this.style, interactorSettings, this);
   },
   mounted() {
     const container = this.$refs.vtkContainer;
