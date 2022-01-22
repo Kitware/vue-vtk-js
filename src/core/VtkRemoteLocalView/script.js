@@ -89,6 +89,10 @@ export default {
       type: String,
       default: 'LocalRenderingContext',
     },
+    boxSelection: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {

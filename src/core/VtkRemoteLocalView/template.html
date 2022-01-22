@@ -9,6 +9,7 @@
     :interactorEvents="interactorEvents"
     :interactorSettings="interactorSettings"
     :contextName="contextName"
+    :boxSelection="boxSelection"
 
     :viewState="getViewState()"
 
@@ -16,6 +17,8 @@
     @onEndAnimation="trigger(cameraKey, [$refs.localView.getCamera()])"
     @beforeSceneLoaded="localRenderingReady = false"
     @onReady="localRenderingReady = $event"
+
+    @BoxSelection="$emit('BoxSelection', $event)"
   >
     <slot></slot>
   </vtk-sync-view>
@@ -31,6 +34,9 @@
     :interactiveQuality="interactiveQuality"
     :stillRatio="stillRatio"
     :stillQuality="stillQuality"
+    :boxSelection="boxSelection"
+
+    @BoxSelection="$emit('BoxSelection', $event)"
   />
 
 </div>
