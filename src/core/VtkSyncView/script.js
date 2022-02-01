@@ -384,6 +384,10 @@ export default {
           if (remoteState.extra.centerOfRotation) {
             this.style.setCenterOfRotation(remoteState.extra.centerOfRotation);
           }
+
+          if (remoteState.extra.resetCamera) {
+            this.resetCamera();
+          }
         }
 
         this.$nextTick(this.render);
