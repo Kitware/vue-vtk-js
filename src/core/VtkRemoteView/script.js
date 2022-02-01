@@ -36,6 +36,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    visible: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -100,12 +104,14 @@ export default {
     this.subscriptions.push(
       this.interactorBoxSelection.onBoxSelectChange(
         ({ container, selection }) => {
-          const { width, height } = container.getBoundingClientRect();
-          this.$emit('BoxSelection', {
-            selection,
-            size: [width, height],
-            mode: 'remote',
-          });
+          if (container) {
+            const { width, height } = container.getBoundingClientRect();
+            this.$emit('BoxSelection', {
+              selection,
+              size: [width, height],
+              mode: 'remote',
+            });
+          }
         }
       )
     );
@@ -129,10 +135,18 @@ export default {
     this.view.render();
   },
   watch: {
-    viewId(id) {
+    id(id) {
       if (this.connected) {
         this.view.setViewId(id);
-        this.view.render();
+        this.view.resize();
+      }
+    },
+    visible(v) {
+      if (v) {
+        const view = this.view.getCanvasView();
+        const [w, h] = view.getSize();
+        view.setSize(w + 2, h + 2); // make sure we force a resize
+        this.$nextTick(this.view.resize);
       }
     },
     enablePicking(value) {
@@ -152,6 +166,11 @@ export default {
     },
     boxSelection(v) {
       this.interactorManipulator.setEnabled(v);
+    },
+  },
+  methods: {
+    resize() {
+      this.view.resize();
     },
   },
   beforeDestroy() {

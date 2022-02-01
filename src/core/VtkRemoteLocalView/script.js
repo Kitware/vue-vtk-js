@@ -99,16 +99,19 @@ export default {
       localRenderingReady: false,
     };
   },
+  watch: {
+    id(viewId) {
+      this.$refs.localView.setSynchronizedViewId(viewId);
+    },
+  },
   computed: {
     localStyle() {
-      return this.mode === 'local' && this.localRenderingReady
-        ? TOP_Z_INDEX
-        : BOTTOM_Z_INDEX;
+      const useLocal = this.mode === 'local' && this.localRenderingReady;
+      return useLocal ? TOP_Z_INDEX : BOTTOM_Z_INDEX;
     },
     remoteStyle() {
-      return this.mode === 'remote' || !this.localRenderingReady
-        ? TOP_Z_INDEX
-        : BOTTOM_Z_INDEX;
+      const useRemote = this.mode === 'remote' || !this.localRenderingReady;
+      return useRemote ? TOP_Z_INDEX : BOTTOM_Z_INDEX;
     },
     sceneKey() {
       if (this.namespace) {
@@ -136,6 +139,10 @@ export default {
     },
     setCamera(props) {
       return this.$refs.localView.setCamera(props);
+    },
+    resize() {
+      this.$refs.localView.resize();
+      this.$refs.remoteView.resize();
     },
   },
   inject: ['get', 'set', 'trigger'],

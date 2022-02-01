@@ -269,7 +269,7 @@ export default {
     };
 
     this.onBoxSelectChange = ({ container, selection }) => {
-      if (!this.boxSelection) {
+      if (!this.boxSelection || !container) {
         return;
       }
       // Share the selection with the rest of the world
@@ -328,6 +328,14 @@ export default {
     this.openglRenderWindow = null;
   },
   methods: {
+    setSynchronizedViewId(newId) {
+      // Remove renderers from previous remote view
+      const renderers = this.renderWindow.getRenderersByReference();
+      while (renderers.length) {
+        renderers.pop();
+      }
+      this.renderWindow.setSynchronizedViewId(newId);
+    },
     async updateViewState(remoteState) {
       // console.time('updateViewState');
       this.renderWindow.getInteractor().setEnableRender(false);
@@ -387,6 +395,9 @@ export default {
         this.renderWindow.getInteractor().setEnableRender(true);
       }
     },
+    resize() {
+      this.onResize();
+    },
     onResize() {
       const container = this.$refs.vtkContainer;
       if (container) {
@@ -413,6 +424,9 @@ export default {
     },
     getCamera() {
       const centerOfRotation = this.style.getCenterOfRotation();
+      this.activeCamera = this.interactor
+        .getCurrentRenderer()
+        .getActiveCamera();
       return {
         centerOfRotation,
         ...this.activeCamera.get(
