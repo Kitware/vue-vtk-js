@@ -132,7 +132,10 @@ export default {
       return scene;
     },
     resetCamera() {
-      return this.$refs.localView.resetCamera();
+      if (this.mode === 'local') {
+        return this.$refs.localView.resetCamera();
+      }
+      return this.$refs.remoteView.resetCamera();
     },
     getCamera() {
       return this.$refs.localView.getCamera();

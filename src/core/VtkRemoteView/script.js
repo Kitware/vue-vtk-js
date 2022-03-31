@@ -71,7 +71,6 @@ export default {
     }
 
     // Bind remote view method to component
-    this.resize = this.view.resize;
     this.render = this.view.render;
     this.resetCamera = this.view.resetCamera;
     // -- set
@@ -143,10 +142,7 @@ export default {
     },
     visible(v) {
       if (v) {
-        const view = this.view.getCanvasView();
-        const [w, h] = view.getSize();
-        view.setSize(w + 2, h + 2); // make sure we force a resize
-        this.$nextTick(this.view.resize);
+        this.resize();
       }
     },
     enablePicking(value) {
@@ -170,7 +166,10 @@ export default {
   },
   methods: {
     resize() {
-      this.view.resize();
+      const view = this.view.getCanvasView();
+      const [w, h] = view.getSize();
+      view.setSize(w + 2, h + 2); // make sure we force a resize
+      this.$nextTick(this.view.resize);
     },
   },
   beforeDestroy() {
