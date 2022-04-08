@@ -5,7 +5,7 @@ import vtkInteractorStyleManipulator from 'vtk.js/Sources/Interaction/Style/Inte
 export default {
   name: 'VtkRemoteView',
   props: {
-    id: {
+    viewId: {
       type: String,
       default: '-1',
     },
@@ -51,7 +51,9 @@ export default {
       throw new Error('VtkRemoteView can not be created without a wsClient');
     }
 
-    const viewStream = this.wsClient.getImageStream().createViewStream(this.id);
+    const viewStream = this.wsClient
+      .getImageStream()
+      .createViewStream(this.viewId);
 
     this.view = vtkRemoteView.newInstance({
       rpcWheelEvent: 'viewport.mouse.zoom.wheel',
@@ -123,7 +125,7 @@ export default {
 
     const session = this.wsClient.getConnection().getSession();
     this.view.setSession(session);
-    this.view.setViewId(this.id);
+    this.view.setViewId(this.viewId);
     this.view.resize();
     this.connected = true;
 
@@ -134,9 +136,9 @@ export default {
     this.view.render();
   },
   watch: {
-    id(id) {
+    viewId(viewId) {
       if (this.connected) {
-        this.view.setViewId(id);
+        this.view.setViewId(viewId);
         this.view.resize();
       }
     },

@@ -19,7 +19,7 @@ export default {
       type: String,
       default: '',
     },
-    id: {
+    viewId: {
       type: String,
       default: '-1',
     },
@@ -100,7 +100,7 @@ export default {
     };
   },
   watch: {
-    id(viewId) {
+    viewId(viewId) {
       this.$refs.localView.setSynchronizedViewId(viewId);
     },
   },
