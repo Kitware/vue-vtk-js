@@ -14,7 +14,7 @@
   },
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --target lib --report --filename vue-vtk src/main.js",
+    "build": "vue-cli-service build --target lib --name vue_vtk --filename vue-vtk src/main.js",
     "lint": "vue-cli-service lint",
     "deploy": "gh-pages -d usage/www -f -r $GIT_PUBLISH_URL",
     "test:pwe": "vue-cli-service serve --open src/tests/PiecewiseEditor/main.js",
