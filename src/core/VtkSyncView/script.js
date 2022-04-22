@@ -172,6 +172,9 @@ export default {
     ready() {
       return this.count < 1;
     },
+    client() {
+      return this.wsClient || this.trame?.client;
+    },
   },
   created() {
     const { interactorSettings } = this;
@@ -189,13 +192,13 @@ export default {
     // Implement getArray
     this.getArray = (hash, binary = true) => {
       this.$nextTick(this.render);
-      if (this.wsClient) {
-        if (this.wsClient.getRemote().SyncView) {
+      if (this.client) {
+        if (this.client.getRemote().SyncView) {
           return busyWrap(
-            this.wsClient.getRemote().SyncView.getArray(hash, binary)
+            this.client.getRemote().SyncView.getArray(hash, binary)
           );
         }
-        const session = this.wsClient?.getConnection()?.getSession();
+        const session = this.client?.getConnection()?.getSession();
         if (session) {
           return busyWrap(
             session.call('viewport.geometry.array.get', [hash, binary])

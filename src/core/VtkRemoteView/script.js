@@ -4,6 +4,7 @@ import vtkInteractorStyleManipulator from 'vtk.js/Sources/Interaction/Style/Inte
 
 export default {
   name: 'VtkRemoteView',
+  inject: ['trame'],
   props: {
     viewId: {
       type: String,
@@ -47,11 +48,11 @@ export default {
     };
   },
   created() {
-    if (!this.wsClient) {
+    if (!this.client) {
       throw new Error('VtkRemoteView can not be created without a wsClient');
     }
 
-    const viewStream = this.wsClient
+    const viewStream = this.client
       .getImageStream()
       .createViewStream(this.viewId);
 
@@ -123,7 +124,7 @@ export default {
     this.view.setContainer(container);
     this.interactorBoxSelection.setContainer(container);
 
-    const session = this.wsClient.getConnection().getSession();
+    const session = this.client.getConnection().getSession();
     this.view.setSession(session);
     this.view.setViewId(this.viewId);
     this.view.resize();
@@ -134,6 +135,11 @@ export default {
     this.resizeObserver.observe(this.$refs.vtkContainer);
 
     this.view.render();
+  },
+  computed: {
+    client() {
+      return this.wsClient || this.trame?.client;
+    },
   },
   watch: {
     viewId(viewId) {
