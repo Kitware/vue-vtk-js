@@ -131,8 +131,13 @@ export default {
     this.connected = true;
 
     // Resize handling
-    this.resizeObserver = new ResizeObserver(this.view.resize);
-    this.resizeObserver.observe(this.$refs.vtkContainer);
+    if (window.ResizeObserver) {
+      this.resizeObserver = new ResizeObserver(this.view.resize);
+      this.resizeObserver.observe(this.$refs.vtkContainer);
+    } else {
+      // Old browser sucks...
+      window.addEventListener('resize', this.view.resize);
+    }
 
     this.view.render();
   },
@@ -182,8 +187,12 @@ export default {
   },
   beforeDestroy() {
     // Stop size listening
-    this.resizeObserver.disconnect();
-    this.resizeObserver = null;
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = null;
+    } else {
+      window.removeEventListener('resize', this.view.resize);
+    }
 
     while (this.subscriptions.length) {
       this.subscriptions.pop().unsubscribe();
