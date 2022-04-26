@@ -229,9 +229,10 @@ export default {
     this.interactor.initialize();
 
     // Attach listeners
+    this.subscriptions = [];
     this.interactorEvents.forEach((name) => {
       const key = `on${name}`;
-      this.interactor[key]((e) => this.$emit(key, e));
+      this.subscriptions.push(this.interactor[key]((e) => this.$emit(name, e)));
     });
 
     // Interactor style
@@ -304,6 +305,10 @@ export default {
   beforeUnmount() {
     // Clear any pending render...
     this.render.cancel();
+
+    while (this.subscriptions.length) {
+      this.subscriptions.pop().unsubscribe();
+    }
 
     document.removeEventListener('keyup', this.handleKey);
     // Stop size listening

@@ -92,7 +92,7 @@ export default {
     this.subscriptions = [];
     this.interactorEvents.forEach((name) => {
       const key = `on${name}`;
-      this.subscriptions.push(interactor[key]((e) => this.$emit(key, e)));
+      this.subscriptions.push(interactor[key]((e) => this.$emit(name, e)));
     });
 
     // Box selection

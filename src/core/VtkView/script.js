@@ -80,6 +80,10 @@ export default {
       type: Object,
       default: () => {},
     },
+    interactorEvents: {
+      type: Array,
+      default: () => [],
+    },
     interactorSettings: {
       type: Array,
       default: () => [
@@ -172,6 +176,13 @@ export default {
     this.interactor = vtkRenderWindowInteractor.newInstance();
     this.interactor.setView(this.openglRenderWindow);
     this.interactor.initialize();
+
+    // Attach listeners
+    this.subscriptions = [];
+    this.interactorEvents.forEach((name) => {
+      const key = `on${name}`;
+      this.subscriptions.push(this.interactor[key]((e) => this.$emit(name, e)));
+    });
 
     // Interactor style
     this.style = vtkInteractorStyleManipulator.newInstance();
@@ -316,6 +327,10 @@ export default {
     this.resetCameraTimeout = setTimeout(() => this.resetCamera(), 100);
   },
   beforeUnmount() {
+    while (this.subscriptions.length) {
+      this.subscriptions.pop().unsubscribe();
+    }
+
     // Clear any pending action
     if (this.debouncedCubeBounds) {
       this.debouncedCubeBounds.cancel();
