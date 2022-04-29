@@ -326,7 +326,7 @@ export default {
     // Give a chance for the first layout to properly reset the camera
     this.resetCameraTimeout = setTimeout(() => this.resetCamera(), 100);
   },
-  beforeUnmount() {
+  beforeDestroy() {
     while (this.subscriptions.length) {
       this.subscriptions.pop().unsubscribe();
     }

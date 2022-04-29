@@ -303,7 +303,7 @@ export default {
       this.updateViewState(this.viewState);
     }
   },
-  beforeUnmount() {
+  beforeDestroy() {
     // Clear any pending render...
     this.render.cancel();
 
