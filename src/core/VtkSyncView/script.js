@@ -145,17 +145,6 @@ export default {
     interactorSettings(v) {
       assignManipulators(this.style, v);
     },
-    synchContextName() {
-      if (this.synchCtx) {
-        this.synchCtx.emptyCachedInstances();
-        this.synchCtx.emptyCachedArrays();
-      }
-
-      this.synchCtx = vtkSynchronizableRenderWindow.getSynchronizerContext(
-        this.contextName
-      );
-      this.synchCtx.setFetchArrayFunction(this.getArray);
-    },
     viewState(remoteState) {
       this.updateViewState(remoteState);
     },
@@ -327,7 +316,7 @@ export default {
     this.interactor.delete();
     this.interactor = null;
 
-    this.renderer.delete();
+    // this.renderer.delete(); // not ours to delete...
     this.renderer = null;
 
     this.renderWindow.delete();
