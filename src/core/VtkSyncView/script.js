@@ -74,6 +74,7 @@ function assignManipulators(style, settings, view) {
 
 export default {
   name: 'VtkSyncView',
+  inject: ['trame'],
   props: {
     camera: {
       type: Object,
