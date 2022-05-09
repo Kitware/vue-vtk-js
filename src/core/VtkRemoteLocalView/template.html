@@ -11,17 +11,16 @@
     :contextName="contextName"
     :boxSelection="boxSelection"
 
-    :viewState="getViewState()"
+    :viewState="scene"
 
     @resetCamera="trigger(cameraKey, [$refs.localView.getCamera()])"
-    @EndAnimation="trigger(cameraKey, [$refs.localView.getCamera()])"
     @beforeSceneLoaded="localRenderingReady = false"
     @onReady="localRenderingReady = $event"
 
     @BoxSelection="$emit('BoxSelection', $event)"
     @StartAnimation="$emit('StartAnimation', $event)"
     @Animation="$emit('Animation', $event)"
-    @EndAnimation="$emit('EndAnimation', $event)"
+    @EndAnimation="trigger(cameraKey, [$refs.localView.getCamera()]); $emit('EndAnimation', $event)"
     @MouseEnter="$emit('MouseEnter', $event)"
     @MouseLeave="$emit('MouseLeave', $event)"
     @StartMouseMove="$emit('StartMouseMove', $event)"

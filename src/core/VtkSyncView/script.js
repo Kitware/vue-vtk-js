@@ -174,9 +174,12 @@ export default {
     };
     const busyWrap = async (promise) => {
       this.count += 1;
-      const result = await promise;
-      setTimeout(complete, 1);
-      return result;
+      try {
+        await promise;
+      } finally {
+        setTimeout(complete, 1);
+      }
+      return promise;
     };
 
     // Implement getArray

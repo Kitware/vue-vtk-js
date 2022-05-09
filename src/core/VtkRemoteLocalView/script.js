@@ -97,6 +97,7 @@ export default {
   data() {
     return {
       localRenderingReady: false,
+      scene: null,
     };
   },
   watch: {
@@ -127,12 +128,8 @@ export default {
     },
   },
   methods: {
-    getViewState() {
-      const scene = this.get(this.sceneKey);
-      return scene;
-    },
     resetCamera() {
-      if (this.mode === 'local') {
+      if (this.mode === 'local' && this.localRenderingReady) {
         return this.$refs.localView.resetCamera();
       }
       return this.$refs.remoteView.resetCamera();
@@ -147,6 +144,23 @@ export default {
       this.$refs.localView.resize();
       this.$refs.remoteView.resize();
     },
+    async trigger(name, args = [], kwargs = {}) {
+      return this.trame.trigger(name, args, kwargs);
+    },
   },
-  inject: ['get', 'set', 'trigger'],
+  mounted() {
+    this.onSceneUpdate = (names) => {
+      if (this.sceneKey && names.includes(this.sceneKey)) {
+        this.scene = this.trame.state.get(this.sceneKey);
+      }
+    };
+    if (this.sceneKey && this.trame.state.get(this.sceneKey)) {
+      this.scene = this.trame.state.get(this.sceneKey);
+    }
+    this.trame.$on('stateChange', this.onSceneUpdate);
+  },
+  beforeDestroy() {
+    this.trame.$off('stateChange', this.onSceneUpdate);
+  },
+  inject: ['trame'],
 };
