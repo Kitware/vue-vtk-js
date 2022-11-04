@@ -5,6 +5,19 @@ In other words this project allow you to leverage vtk.js using Vue component syn
 
 ## Usage
 
+```js
+import Vue from 'vue';
+import App from './App.vue';
+import VTK from 'vue-vtk-js';
+
+// Add vue-vtk-js components to Vue
+Vue.use(VTK);
+
+new Vue({
+  render: (h) => h(App),
+}).$mount('#app');
+```
+
 Simple example of a geometric dataset render into a view.
 
 ```
@@ -26,57 +39,7 @@ Simple example of a geometric dataset render into a view.
 </vtk-view>
 ```
 
-## Building library
-
-`npm run build:debug` for development package or `npm run build` for optimized bundle.
-
-## Using library inside your Vue application
-
-```
-<script>
-  import { VtkView, VtkGeometryRepresentation, VtkReader } from 'vue-vtk-js';
-
-  export default {
-    name: 'Example',
-    props: {
-      url: {
-        type: String,
-        default: '',
-      }
-    },
-    components: {
-      VtkView,
-      VtkGeometryRepresentation,
-      VtkReader,
-    },
-  }
-</script>
-
-<template>
-  <vtk-view>
-    <vtk-geometry-representation>
-      <vtk-reader vtkClass="vtkOBJReader" :url="url" />
-    </vtk-geometry-representation>
-  </vtk-view>
-</template>
-```
-
-or use the registration
-
-```
-import Vue from 'vue';
-import App from './App.vue';
-import { registerComponents } from 'vue-vtk-js';
-
-// Add vue-vtk-js components to Vue
-registerComponents(Vue);
-
-new Vue({
-  render: (h) => h(App),
-}).$mount('#app');
-```
-
-Where __App__ could be just a template like below
+or something like
 
 ```
 <vtk-view>
@@ -85,3 +48,7 @@ Where __App__ could be just a template like below
   </vtk-geometry-representation>
 </vtk-view>
 ```
+
+## Building library
+
+`npm run build:debug` for development package or `npm run build` for optimized bundle.
