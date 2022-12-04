@@ -131,6 +131,7 @@ export default {
       default: 'LocalRenderingContext',
     },
     viewState: {
+      // Only used at mount time
       type: Object,
     },
     boxSelection: {
@@ -144,9 +145,6 @@ export default {
     },
     interactorSettings(v) {
       assignManipulators(this.style, v);
-    },
-    viewState(remoteState) {
-      this.updateViewState(remoteState);
     },
     ready(r) {
       this.$emit('onReady', r);
@@ -167,6 +165,7 @@ export default {
     },
   },
   created() {
+    this.rwId = 0;
     const { interactorSettings } = this;
 
     const complete = () => {
@@ -292,8 +291,18 @@ export default {
     this.resetCamera();
 
     if (this.viewState) {
+      this.rwId = this.viewState.id;
       this.updateViewState(this.viewState);
     }
+
+    this.wsSubscription = this.client
+      .getConnection()
+      .getSession()
+      .subscribe('trame.vtk.delta', ([deltaState]) => {
+        if (deltaState.id === this.rwId) {
+          this.updateViewState(deltaState);
+        }
+      });
   },
   beforeDestroy() {
     // Clear any pending render...
@@ -301,6 +310,14 @@ export default {
 
     while (this.subscriptions.length) {
       this.subscriptions.pop().unsubscribe();
+    }
+
+    if (this.wsSubscription && this.client) {
+      this.client
+        .getConnection()
+        .getSession()
+        .unsubscribe(this.wsSubscription);
+      this.wsSubscription = null;
     }
 
     document.removeEventListener('keyup', this.handleKey);
@@ -336,6 +353,7 @@ export default {
         renderers.pop();
       }
       this.renderWindow.setSynchronizedViewId(newId);
+      this.rwId = newId;
     },
     async updateViewState(remoteState) {
       // console.time('updateViewState');

@@ -323,9 +323,8 @@ export default {
       };
     },
     viewBox() {
-      return `${-this.padding} ${-this.padding} ${
-        this.view.size[0] + 2 * this.padding
-      } ${this.view.size[1] + 2 * this.padding}`;
+      return `${-this.padding} ${-this.padding} ${this.view.size[0] +
+        2 * this.padding} ${this.view.size[1] + 2 * this.padding}`;
     },
     polylinePoints() {
       return this.controlPoints.map(CTRL_POINT_TO_STR).join(' ');
