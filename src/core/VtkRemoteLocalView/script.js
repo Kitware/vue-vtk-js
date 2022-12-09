@@ -89,6 +89,10 @@ export default {
       type: String,
       default: 'LocalRenderingContext',
     },
+    enablePicking: {
+      type: Boolean,
+      default: false,
+    },
     boxSelection: {
       type: Boolean,
       default: false,
