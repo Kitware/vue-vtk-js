@@ -123,6 +123,7 @@ export default {
     const container = this.$refs.vtkContainer;
     this.view.setContainer(container);
     this.interactorBoxSelection.setContainer(container);
+    this.interactorBoxSelection.setBoxChangeOnClick(this.enablePicking);
 
     const session = this.client.getConnection().getSession();
     this.view.setSession(session);
@@ -160,6 +161,7 @@ export default {
     },
     enablePicking(value) {
       this.view.getInteractorStyle().setSendMouseMove(value);
+      this.interactorBoxSelection.setBoxChangeOnClick(value);
     },
     interactiveRatio(value) {
       this.view.setInteractiveRatio(Number(value));
