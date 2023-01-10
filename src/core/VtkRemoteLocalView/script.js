@@ -19,6 +19,10 @@ export default {
       type: String,
       default: '',
     },
+    refPrefix: {
+      type: String,
+      default: 'refName',
+    },
     viewId: {
       type: String,
       default: '-1',
@@ -97,16 +101,19 @@ export default {
       type: Boolean,
       default: false,
     },
+    viewState: {
+      // Only used at mount time
+      type: Object,
+    },
   },
   data() {
     return {
       localRenderingReady: false,
-      scene: null,
     };
   },
   watch: {
     viewId(viewId) {
-      this.$refs.localView.setSynchronizedViewId(viewId);
+      this.$refs[`${this.refPrefix}_localView`].setSynchronizedViewId(viewId);
     },
   },
   computed: {
@@ -118,12 +125,6 @@ export default {
       const useRemote = this.mode === 'remote' || !this.localRenderingReady;
       return useRemote ? TOP_Z_INDEX : BOTTOM_Z_INDEX;
     },
-    sceneKey() {
-      if (this.namespace) {
-        return `${this.namespace}Scene`;
-      }
-      return 'scene';
-    },
     cameraKey() {
       if (this.namespace) {
         return `${this.namespace}Camera`;
@@ -134,37 +135,23 @@ export default {
   methods: {
     resetCamera() {
       if (this.mode === 'local' && this.localRenderingReady) {
-        return this.$refs.localView.resetCamera();
+        return this.$refs[`${this.refPrefix}_localView`].resetCamera();
       }
-      return this.$refs.remoteView.resetCamera();
+      return this.$refs[`${this.refPrefix}_remoteView`].resetCamera();
     },
     getCamera() {
-      return this.$refs.localView.getCamera();
+      return this.$refs[`${this.refPrefix}_localView`].getCamera();
     },
     setCamera(props) {
-      return this.$refs.localView.setCamera(props);
+      return this.$refs[`${this.refPrefix}_localView`].setCamera(props);
     },
     resize() {
-      this.$refs.localView.resize();
-      this.$refs.remoteView.resize();
+      this.$refs[`${this.refPrefix}_localView`].resize();
+      this.$refs[`${this.refPrefix}_remoteView`].resize();
     },
     async trigger(name, args = [], kwargs = {}) {
       return this.trame.trigger(name, args, kwargs);
     },
-  },
-  mounted() {
-    this.onSceneUpdate = (names) => {
-      if (this.sceneKey && names.includes(this.sceneKey)) {
-        this.scene = this.trame.state.get(this.sceneKey);
-      }
-    };
-    if (this.sceneKey && this.trame.state.get(this.sceneKey)) {
-      this.scene = this.trame.state.get(this.sceneKey);
-    }
-    this.trame.$on('stateChange', this.onSceneUpdate);
-  },
-  beforeDestroy() {
-    this.trame.$off('stateChange', this.onSceneUpdate);
   },
   inject: ['trame'],
 };

@@ -2,7 +2,7 @@
   <vtk-sync-view
     :viewId="viewId"
     :wsClient="wsClient"
-    ref="localView"
+    :ref="`${refPrefix}_localView`"
     :style="localStyle"
 
     :camera="camera"
@@ -11,16 +11,16 @@
     :contextName="contextName"
     :boxSelection="boxSelection"
 
-    :viewState="scene"
+    :viewState="viewState"
 
-    @resetCamera="trigger(cameraKey, [$refs.localView.getCamera()])"
+    @resetCamera="trigger(cameraKey, [$refs[`${refPrefix}_localView`].getCamera()])"
     @beforeSceneLoaded="localRenderingReady = false"
     @onReady="localRenderingReady = $event"
 
     @BoxSelection="$emit('BoxSelection', $event)"
     @StartAnimation="$emit('StartAnimation', $event)"
     @Animation="$emit('Animation', $event)"
-    @EndAnimation="trigger(cameraKey, [$refs.localView.getCamera()]); $emit('EndAnimation', $event)"
+    @EndAnimation="trigger(cameraKey, [$refs[`${refPrefix}_localView`].getCamera()]); $emit('EndAnimation', $event)"
     @MouseEnter="$emit('MouseEnter', $event)"
     @MouseLeave="$emit('MouseLeave', $event)"
     @StartMouseMove="$emit('StartMouseMove', $event)"
@@ -60,7 +60,7 @@
   <vtk-remote-view
     :viewId="viewId"
     :wsClient="wsClient"
-    ref="remoteView"
+    :ref="`${refPrefix}_remoteView`"
     :style="remoteStyle"
     :visible="mode === 'remote' || !localRenderingReady"
 
