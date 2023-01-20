@@ -15,6 +15,10 @@ export default {
       type: String,
       default: 'local',
     },
+    disableAutoSwitch: {
+      type: Boolean,
+      default: false,
+    },
     namespace: {
       type: String,
       default: '',
@@ -117,12 +121,17 @@ export default {
     },
   },
   computed: {
+    computedLocalRenderingReady() {
+      return this.disableAutoSwitch || this.localRenderingReady;
+    },
     localStyle() {
-      const useLocal = this.mode === 'local' && this.localRenderingReady;
+      const useLocal =
+        this.mode === 'local' && this.computedLocalRenderingReady;
       return useLocal ? TOP_Z_INDEX : BOTTOM_Z_INDEX;
     },
     remoteStyle() {
-      const useRemote = this.mode === 'remote' || !this.localRenderingReady;
+      const useRemote =
+        this.mode === 'remote' || !this.computedLocalRenderingReady;
       return useRemote ? TOP_Z_INDEX : BOTTOM_Z_INDEX;
     },
     cameraKey() {
@@ -134,7 +143,7 @@ export default {
   },
   methods: {
     resetCamera() {
-      if (this.mode === 'local' && this.localRenderingReady) {
+      if (this.mode === 'local' && this.computedLocalRenderingReady) {
         return this.$refs[`${this.refPrefix}_localView`].resetCamera();
       }
       return this.$refs[`${this.refPrefix}_remoteView`].resetCamera();

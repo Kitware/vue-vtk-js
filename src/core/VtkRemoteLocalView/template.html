@@ -62,7 +62,7 @@
     :wsClient="wsClient"
     :ref="`${refPrefix}_remoteView`"
     :style="remoteStyle"
-    :visible="mode === 'remote' || !localRenderingReady"
+    :visible="mode === 'remote' || !computedLocalRenderingReady"
 
     @onEndAnimation="trigger(cameraKey)"
 
