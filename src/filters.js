@@ -1,4 +1,4 @@
-import vtkColorMaps from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction/ColorMaps';
+import vtkColorMaps from "@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps";
 
 function vtkColorPresetNames() {
   return vtkColorMaps.rgbPresetNames;
@@ -6,9 +6,9 @@ function vtkColorPresetNames() {
 
 function vtkLabel(str) {
   return str
-    .split('_')
+    .split("_")
     .map((v) => `${v.charAt(0).toUpperCase()}${v.slice(1)}`)
-    .join(' ');
+    .join(" ");
 }
 
 function ListToItem(list) {

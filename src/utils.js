@@ -1,4 +1,4 @@
-import Base64 from 'vtk.js/Sources/Common/Core/Base64';
+import Base64 from "@kitware/vtk.js/Common/Core/Base64";
 
 const NUMPY_DTYPES = {
   int32: Int32Array,
@@ -23,7 +23,7 @@ export function printInfo(typedArray) {
       max = v;
     }
   }
-  console.log('data Range', min, max);
+  console.log("data Range", min, max);
   return typedArray;
 }
 

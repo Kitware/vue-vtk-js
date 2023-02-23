@@ -1,11 +1,5 @@
-import Vue from 'vue';
-import App from './App.vue';
-import VueVtkJs from 'vue-vtk-js';
+import { createApp } from "vue";
+import App from "./App.vue";
+import vtk from "vue-vtk-js";
 
-Vue.use(VueVtkJs);
-
-Vue.config.productionTip = false;
-
-new Vue({
-  render: (h) => h(App),
-}).$mount('#app');
+createApp(App).use(vtk).mount("#app");

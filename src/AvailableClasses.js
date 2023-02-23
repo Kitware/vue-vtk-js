@@ -2,33 +2,33 @@
 // => this is required because of tree shacking
 
 // Rendering profiles
-import 'vtk.js/Sources/Rendering/OpenGL/Profiles/All';
+import "@kitware/vtk.js/Rendering/OpenGL/Profiles/All";
 
 // Data access helper
-import 'vtk.js/Sources/IO/Core/DataAccessHelper/HttpDataAccessHelper';
-import 'vtk.js/Sources/IO/Core/DataAccessHelper/JSZipDataAccessHelper';
+import "@kitware/vtk.js/IO/Core/DataAccessHelper/HttpDataAccessHelper";
+import "@kitware/vtk.js/IO/Core/DataAccessHelper/JSZipDataAccessHelper";
 
 // Sources
-import 'vtk.js/Sources/Filters/Sources/ConcentricCylinderSource';
-import 'vtk.js/Sources/Filters/Sources/ConeSource';
-import 'vtk.js/Sources/Filters/Sources/CubeSource';
-import 'vtk.js/Sources/Filters/Sources/CylinderSource';
-import 'vtk.js/Sources/Filters/Sources/LineSource';
-import 'vtk.js/Sources/Filters/Sources/PlaneSource';
-import 'vtk.js/Sources/Filters/Sources/PointSource';
-import 'vtk.js/Sources/Filters/Sources/SphereSource';
+import "@kitware/vtk.js/Filters/Sources/ConcentricCylinderSource";
+import "@kitware/vtk.js/Filters/Sources/ConeSource";
+import "@kitware/vtk.js/Filters/Sources/CubeSource";
+import "@kitware/vtk.js/Filters/Sources/CylinderSource";
+import "@kitware/vtk.js/Filters/Sources/LineSource";
+import "@kitware/vtk.js/Filters/Sources/PlaneSource";
+import "@kitware/vtk.js/Filters/Sources/PointSource";
+import "@kitware/vtk.js/Filters/Sources/SphereSource";
 
 // Filters
-import 'vtk.js/Sources/Filters/General/WarpScalar';
-import 'vtk.js/Sources/Filters/General/TubeFilter';
+import "@kitware/vtk.js/Filters/General/WarpScalar";
+import "@kitware/vtk.js/Filters/General/TubeFilter";
 
 // Readers
-import 'vtk.js/Sources/IO/Geometry/PLYReader';
-import 'vtk.js/Sources/IO/Geometry/STLReader';
-import 'vtk.js/Sources/IO/Misc/ElevationReader';
-import 'vtk.js/Sources/IO/Misc/OBJReader';
+import "@kitware/vtk.js/IO/Geometry/PLYReader";
+import "@kitware/vtk.js/IO/Geometry/STLReader";
+import "@kitware/vtk.js/IO/Misc/ElevationReader";
+import "@kitware/vtk.js/IO/Misc/OBJReader";
 // bring pdb definition (big)
-import 'vtk.js/Sources/IO/Misc/PDBReader';
+import "@kitware/vtk.js/IO/Misc/PDBReader";
 // bring zip (big++)
-import 'vtk.js/Sources/IO/XML/XMLImageDataReader';
-import 'vtk.js/Sources/IO/XML/XMLPolyDataReader';
+import "@kitware/vtk.js/IO/XML/XMLImageDataReader";
+import "@kitware/vtk.js/IO/XML/XMLPolyDataReader";
