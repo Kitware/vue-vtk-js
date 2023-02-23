@@ -8,7 +8,7 @@
   "dependencies": {
     "@kitware/vtk.js": "26.5.3",
     "@vitejs/plugin-vue": "^4.0.0",
-    "vue-vtk-js": "latest"
+    "vue-vtk-js": "^3.0.0"
   },
   "peerDependencies": {
     "vue": "^2.7.0 || >=3.0.0"

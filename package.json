@@ -36,5 +36,11 @@
     "vue": "^3.0.0"
   },
   "author": "Kitware Inc",
-  "license": "BSD-3-Clause"
+  "license": "BSD-3-Clause",
+  "files": [
+    "dist/*",
+    "src/*",
+    "*.json",
+    "*.js"
+  ]
 }
