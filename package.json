@@ -15,7 +15,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore --ignore-pattern public"
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore --ignore-pattern public",
+    "semantic-release": "semantic-release"
   },
   "dependencies": {
     "@kitware/vtk.js": "26.5.3",
@@ -25,6 +26,7 @@
     "vue": "^2.7.0 || >=3.0.0"
   },
   "devDependencies": {
+    "semantic-release": "19.0.2",
     "@rushstack/eslint-patch": "^1.1.4",
     "@vue/eslint-config-prettier": "^7.0.0",
     "eslint": "^8.33.0",
