@@ -5,16 +5,7 @@
   "scripts": {
     "dev": "vite"
   },
-  "dependencies": {
-    "@kitware/vtk.js": "26.5.3",
-    "@vitejs/plugin-vue": "^4.0.0",
-    "vue-vtk-js": "^3.0.0"
-  },
-  "peerDependencies": {
-    "vue": "^2.7.0 || >=3.0.0"
-  },
   "devDependencies": {
-    "vite": "^4.1.0",
-    "vue": "^3.0.0"
+    "vite": "^4.1.0"
   }
 }
