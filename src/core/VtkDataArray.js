@@ -71,10 +71,6 @@ export default {
     watch(type, updateArrayValues);
     watch(values, updateArrayValues);
     watch(numberOfComponents, updateArrayValues);
-    watch(fields, (newField, oldField) => {
-      oldField.removeArray(array);
-      newField[props.registration](array);
-    });
 
     onMounted(() => {
       if (fields) {
