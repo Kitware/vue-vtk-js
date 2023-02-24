@@ -1,5 +1,4 @@
-import { ref, provide, nextTick, onMounted, onBeforeUnmount } from "vue";
-
+import { ref, provide, nextTick, onMounted, onBeforeUnmount, watch } from "vue";
 import { ClientView, enableResetCamera } from "./localview";
 
 export default {
@@ -69,6 +68,9 @@ export default {
     },
   },
   emits: [
+    "resize",
+    "resetCamera",
+    //
     "BoxSelection",
     // https://github.com/Kitware/vtk-js/blob/master/Sources/Rendering/Core/RenderWindowInteractor/index.js#L27-L67
     "StartAnimation",
@@ -120,25 +122,10 @@ export default {
       props.pickingModes,
       props.interactorSettings,
       props.interactorEvents,
-      { emit, nextTick },
-      onBoxSelectChange
+      { emit, nextTick }
     );
     const { onEnter, onLeave, onKeyUp } = enableResetCamera(view);
     const resizeObserver = new ResizeObserver(() => view.resize());
-
-    function onBoxSelectChange({ container, selection }) {
-      if (!props.boxSelection || !container) {
-        return;
-      }
-      // Share the selection with the rest of the world
-      const { width, height } = container.getBoundingClientRect();
-      emit("BoxSelection", {
-        selection,
-        mode: "local",
-        size: [width, height],
-        camera: view.getCamera(),
-      });
-    }
 
     onMounted(() => {
       const container = vtkContainer.value;
@@ -152,6 +139,16 @@ export default {
       document.removeEventListener("keyup", onKeyUp);
       resizeObserver.disconnect();
     });
+
+    // React to changes on settings
+    watch(
+      () => props.interactorSettings,
+      () => view.updateStyle(props.interactorSettings)
+    );
+    watch(
+      () => props.pickingModes,
+      () => (view.pickingModes = props.pickingModes)
+    );
 
     provide("view", view);
     const { onClick, onMouseMove } = view;
@@ -177,7 +174,7 @@ export default {
             ref="vtkContainer"
             style="position:absolute;width:100%;height:100%;overflow:hidden;"
           />
-          <slot v-show="false"></slot>
+          <slot style="display: none;"></slot>
         </div>
       `,
 };

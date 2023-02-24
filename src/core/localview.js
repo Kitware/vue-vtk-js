@@ -347,14 +347,7 @@ export function enableResetCamera(view) {
 }
 
 export class ClientView {
-  constructor(
-    background,
-    pickingModes,
-    interactorSettings,
-    events,
-    vueCtx,
-    onBoxSelectChange
-  ) {
+  constructor(background, pickingModes, interactorSettings, events, vueCtx) {
     this.vueCtx = vueCtx;
     this.pickingModes = pickingModes;
     this.renderWindow = vtkRenderWindow.newInstance();
@@ -484,9 +477,7 @@ export class ClientView {
     this.lastSelection = [];
 
     this.onBoxSelectChange = select;
-
-    // Configure interaction once 'this' is fully setup
-    assignManipulators(this.style, interactorSettings, onBoxSelectChange);
+    this.updateStyle(interactorSettings);
   }
 
   setContainer(container) {
@@ -558,8 +549,8 @@ export class ClientView {
     }
   }
 
-  updateStyle(settings, onBoxSelectChange) {
-    assignManipulators(this.style, settings, onBoxSelectChange);
+  updateStyle(settings) {
+    assignManipulators(this.style, settings, this.onBoxSelectChange);
   }
 
   getScreenEventPositionFor(source) {

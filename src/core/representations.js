@@ -45,7 +45,7 @@ class Representation {
     this.property = this.actor.getProperty();
   }
 
-  updateColorPreset() {
+  updateColorMapPreset() {
     const preset = vtkColorMaps.getPresetByName(this.refs.presetName.value);
     this.lookupTable.applyColorMap(preset);
     this.updateColorDataRange();
@@ -87,14 +87,14 @@ export function useRepresentation(props, mapperNewInstance) {
     representation.actor.set({ representationId: props.id }, true);
 
     // Initial update
-    representation.updateColorPreset();
+    representation.updateColorMapPreset();
 
     // Use parent inject
     view.renderer.addActor(representation.actor);
   });
 
   onBeforeUnmount(() => {
-    view.renderer.removeActor(representation.actor);
+    view?.renderer?.removeActor(representation.actor);
 
     representation.actor.delete();
     representation.actor = null;
