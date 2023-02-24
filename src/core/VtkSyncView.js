@@ -241,7 +241,7 @@ export default {
               ref="vtkContainer"
               style="position:absolute;width:100%;height:100%;overflow:hidden;"
             />
-            <slot v-show="false"></slot>
+            <slot style="display: none;"></slot>
         </div>
     `,
 };
