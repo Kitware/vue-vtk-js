@@ -176,7 +176,6 @@ export default {
     // onMounted
     onMounted(() => {
       const container = unref(vtkContainer);
-      console.log("container for view", container);
       view.setContainer(container);
       interactorBoxSelection.setContainer(container);
       interactorBoxSelection.setBoxChangeOnClick(props.enablePicking);
@@ -230,7 +229,6 @@ export default {
     watch(
       () => props.visible,
       (visible) => {
-        console.log("remote visible", visible);
         if (unref(visible)) {
           resize();
         }

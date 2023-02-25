@@ -172,7 +172,6 @@ export default {
     }
 
     watch(ready, (v) => {
-      console.log("watch ready => emit", v);
       emit("onReady", v);
     });
 
