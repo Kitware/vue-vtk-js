@@ -162,11 +162,10 @@ export default {
         return;
       }
       // Share the selection with the rest of the world
-      const { width, height } = container.getBoundingClientRect();
       emit("BoxSelection", {
         selection,
         mode: "local",
-        size: [width, height],
+        size: view.openglRenderWindow.getSize(),
         camera: view.getCamera(),
       });
     }
@@ -174,6 +173,11 @@ export default {
     watch(ready, (v) => {
       emit("onReady", v);
     });
+
+    watch(
+      () => props.interactorSettings,
+      () => view.updateStyle(props.interactorSettings, onBoxSelectChange)
+    );
 
     let wsSubscription = null;
     onMounted(() => {
