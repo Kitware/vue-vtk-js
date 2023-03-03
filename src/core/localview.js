@@ -185,8 +185,7 @@ export class LocalView {
     this.mtime = Math.max(this.mtime, remoteState.mtime) + 1;
     this.busy.reset();
     this.busy.start();
-    // eslint-disable-next-line
-          remoteState.mtime = this.mtime;
+    remoteState.mtime = this.mtime;
     const progress = this.renderWindow.synchronize(remoteState);
 
     // Bind camera as soon as possible

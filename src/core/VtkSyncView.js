@@ -130,6 +130,7 @@ export default {
     const trame = inject("trame");
     const ready = ref(false);
     const vtkContainer = ref(null);
+    let idChanged = false;
 
     const client = computed(() => {
       return props.wsClient || trame?.client;
@@ -178,6 +179,15 @@ export default {
       () => props.interactorSettings,
       () => view.updateStyle(props.interactorSettings, onBoxSelectChange)
     );
+    watch(
+      () => props.viewState,
+      ({ id }) => {
+        if (id === idChanged) {
+          idChanged = false;
+          view.updateViewState(props.viewState);
+        }
+      }
+    );
 
     let wsSubscription = null;
     onMounted(() => {
@@ -221,7 +231,13 @@ export default {
     const resetCamera = () => view.resetCamera();
     const getCamera = () => view.getCamera();
     const setCamera = (v) => view.setCamera(v);
-    const setSynchronizedViewId = (v) => view.setSynchronizedViewId(v);
+    const setSynchronizedViewId = (v) => {
+      idChanged = v;
+      if (typeof props.viewState.id === "number") {
+        idChanged = Number(idChanged);
+      }
+      view.setSynchronizedViewId(idChanged);
+    };
     const resize = () => view.resize();
     return {
       vtkContainer,
