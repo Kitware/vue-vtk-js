@@ -290,6 +290,10 @@ export class LocalView {
     assignManipulators(this.style, settings, onBoxSelectChange);
   }
 
+  captureImage(format, opts) {
+    return this.renderWindow.captureImages(format, opts)[0];
+  }
+
   beforeDelete() {
     this.render.cancel();
 

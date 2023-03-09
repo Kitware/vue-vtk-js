@@ -51,6 +51,7 @@ export default {
     },
   },
   emits: [
+    "onImageCapture",
     "BoxSelection",
     // https://github.com/Kitware/vtk-js/blob/master/Sources/Rendering/Core/RenderWindowInteractor/index.js#L27-L67
     "StartAnimation",
@@ -173,6 +174,14 @@ export default {
       nextTick(view.resize);
     }
 
+    const captureImage = async () => {
+      const url = view.getCanvasView().get("bgImage").bgImage.src;
+      const response = await fetch(url);
+      const blob = await response.blob();
+      emit("onImageCapture", blob);
+      return blob;
+    };
+
     // onMounted
     onMounted(() => {
       const container = unref(vtkContainer);
@@ -289,6 +298,7 @@ export default {
       getInteractiveRatio,
       getStillQuality,
       getStillRatio,
+      captureImage,
     };
   },
   template: `

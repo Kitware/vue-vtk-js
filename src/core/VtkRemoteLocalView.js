@@ -11,6 +11,58 @@ export default {
     VtkRemoteView,
     VtkSyncView,
   },
+  emits: [
+    "resetCamera",
+    "beforeSceneLoaded",
+    "afterSceneLoaded",
+    "viewStateChange",
+    "onReady",
+    "resize",
+    "onLocalImageCapture",
+    "onRemoteImageCapture",
+    //
+    "BoxSelection",
+    // https://github.com/Kitware/vtk-js/blob/master/Sources/Rendering/Core/RenderWindowInteractor/index.js#L27-L67
+    "StartAnimation",
+    "Animation",
+    "EndAnimation",
+    "PointerEnter",
+    "PointerLeave",
+    "MouseEnter",
+    "MouseLeave",
+    "StartMouseMove",
+    "MouseMove",
+    "EndMouseMove",
+    "LeftButtonPress",
+    "LeftButtonRelease",
+    "MiddleButtonPress",
+    "MiddleButtonRelease",
+    "RightButtonPress",
+    "RightButtonRelease",
+    "KeyPress",
+    "KeyDown",
+    "KeyUp",
+    "StartMouseWheel",
+    "MouseWheel",
+    "EndMouseWheel",
+    "StartPinch",
+    "Pinch",
+    "EndPinch",
+    "StartPan",
+    "Pan",
+    "EndPan",
+    "StartRotate",
+    "Rotate",
+    "EndRotate",
+    "Button3D",
+    "Move3D",
+    "StartPointerLock",
+    "EndPointerLock",
+    "StartInteraction",
+    "Interaction",
+    "EndInteraction",
+    "AnimationFrameRateUpdate",
+  ],
   props: {
     mode: {
       type: String,
@@ -152,6 +204,11 @@ export default {
       return localViewRef.value.setCamera(props);
     }
 
+    async function captureImage(format = "image/png", opts = {}) {
+      localViewRef.value.captureImage(format, opts);
+      remoteViewRef.value.captureImage();
+    }
+
     function resize() {
       localViewRef.value.resize();
       remoteViewRef.value.resize();
@@ -184,6 +241,7 @@ export default {
       localStyle,
       remoteStyle,
       emit,
+      captureImage,
     };
   },
   template: `
@@ -206,6 +264,8 @@ export default {
             @resetCamera="trigger(cameraKey, [getCamera()])"
             @beforeSceneLoaded="onReady(false)"
             @onReady="onReady($event)"
+
+            @onImageCapture="emit('onLocalImageCapture', $event)"
 
             @BoxSelection="emit('BoxSelection', $event)"
             @StartAnimation="emit('StartAnimation', $event)"
@@ -254,6 +314,8 @@ export default {
             :wsClient="wsClient"
             :style="remoteStyle"
             :visible="mode === 'remote' || !computedLocalRenderingReady"
+
+            @onImageCapture="emit('onRemoteImageCapture', $event)"
 
             @onEndAnimation="trigger(cameraKey)"
 

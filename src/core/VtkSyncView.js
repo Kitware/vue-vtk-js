@@ -83,6 +83,7 @@ export default {
     "viewStateChange",
     "onReady",
     "resize",
+    "onImageCapture",
     //
     "BoxSelection",
     // https://github.com/Kitware/vtk-js/blob/master/Sources/Rendering/Core/RenderWindowInteractor/index.js#L27-L67
@@ -228,6 +229,14 @@ export default {
     });
 
     provide("view", view);
+
+    const captureImage = async (format = "image/png", opts = {}) => {
+      const img = await view.captureImage(format, opts);
+      const response = await fetch(img);
+      const blob = await response.blob();
+      emit("onImageCapture", blob);
+      return blob;
+    };
     const resetCamera = () => view.resetCamera();
     const getCamera = () => view.getCamera();
     const setCamera = (v) => view.setCamera(v);
@@ -248,6 +257,7 @@ export default {
       setCamera,
       setSynchronizedViewId,
       resize,
+      captureImage,
     };
   },
   template: `
