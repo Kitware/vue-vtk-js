@@ -106,6 +106,7 @@ export default {
     }
 
     const viewStream = client.getImageStream().createViewStream(props.viewId);
+    viewStream.get("protocol").protocol.setQuality(props.viewId, 5, 0.1); // allow invalid images to be cheap
     const view = vtkRemoteView.newInstance({
       rpcWheelEvent: "viewport.mouse.zoom.wheel",
       viewStream,
@@ -183,8 +184,9 @@ export default {
     };
 
     // onMounted
-    onMounted(() => {
+    onMounted(async () => {
       const container = unref(vtkContainer);
+      view.getCanvasView().setUseBackgroundImage(0);
       view.setContainer(container);
       interactorBoxSelection.setContainer(container);
       interactorBoxSelection.setBoxChangeOnClick(props.enablePicking);
@@ -192,7 +194,32 @@ export default {
       const session = client.getConnection().getSession();
       view.setSession(session);
       view.setViewId(props.viewId);
-      view.resize();
+
+      // Allow to evaluate layout to get valid size
+      await nextTick();
+
+      // Update server quality/ratio/size
+      const { width, height } = container.getBoundingClientRect(); // only valid now...
+      view.getCanvasView().setSize(width, height);
+      viewStream.endInteraction();
+
+      await new Promise((resolve) => {
+        const subscription = viewStream.onImageReady(({ image, metadata }) => {
+          const [w, h] = metadata.size;
+          if (w !== image.width || h !== image.height) {
+            return;
+          }
+          const sw = viewStream.getStillRatio() * width;
+          const sh = viewStream.getStillRatio() * height;
+          if (w === sw && h === sh) {
+            subscription.unsubscribe();
+            view.getCanvasView().setBackgroundImage(image);
+            resolve();
+          }
+        });
+      });
+
+      view.getCanvasView().setUseBackgroundImage(1);
       connected.value = true;
 
       // Resize handling
@@ -203,8 +230,6 @@ export default {
         // Old browser sucks...
         window.addEventListener("resize", view.resize);
       }
-
-      view.render();
     });
 
     // onBeforeUnmout
