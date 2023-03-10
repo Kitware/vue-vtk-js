@@ -200,23 +200,29 @@ export default {
 
       // Update server quality/ratio/size
       const { width, height } = container.getBoundingClientRect(); // only valid now...
-      view.getCanvasView().setSize(width, height);
-      viewStream.endInteraction();
+      const minSize = width < 10 || height < 10 ? 10 : 0; // prevent crash from hidden view
+      view
+        .getCanvasView()
+        .setSize(Math.round(width + minSize), Math.round(height + minSize));
 
       await new Promise((resolve) => {
         const subscription = viewStream.onImageReady(({ image, metadata }) => {
           const [w, h] = metadata.size;
           if (w !== image.width || h !== image.height) {
+            viewStream.render();
             return;
           }
-          const sw = viewStream.getStillRatio() * width;
-          const sh = viewStream.getStillRatio() * height;
+          const sw = viewStream.getStillRatio() * Math.round(minSize + width);
+          const sh = viewStream.getStillRatio() * Math.round(minSize + height);
           if (w === sw && h === sh) {
             subscription.unsubscribe();
             view.getCanvasView().setBackgroundImage(image);
             resolve();
+          } else {
+            viewStream.render();
           }
         });
+        viewStream.endInteraction();
       });
 
       view.getCanvasView().setUseBackgroundImage(1);
