@@ -219,7 +219,7 @@ export default {
         client.value
           .getConnection()
           .getSession()
-          .unsubscribe(this.wsSubscription);
+          .unsubscribe(wsSubscription);
         wsSubscription = null;
       }
 
