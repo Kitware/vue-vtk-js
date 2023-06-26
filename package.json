@@ -19,7 +19,7 @@
     "semantic-release": "semantic-release"
   },
   "dependencies": {
-    "@kitware/vtk.js": "28.2.4",
+    "@kitware/vtk.js": "28.2.6",
     "@vitejs/plugin-vue": "^4.0.0"
   },
   "peerDependencies": {
