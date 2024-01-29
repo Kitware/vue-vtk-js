@@ -107,8 +107,9 @@ class BusyHandler {
 }
 
 export class LocalView {
-  constructor(ctxName, getArray, events, vueCtx) {
+  constructor(ctxName, pickingModes, getArray, events, vueCtx) {
     this.vueCtx = vueCtx;
+    this.pickingModes = pickingModes;
     this.container = null;
     this.rwId = 0;
     this.mtime = 0;
@@ -152,6 +153,57 @@ export class LocalView {
       }
       this.renderWindow.render();
     }, 0);
+
+    // Picking handler
+    this.selector = vtkOpenGLHardwareSelector.newInstance({
+      captureZValues: true,
+    });
+    this.selector.setFieldAssociation(
+      FieldAssociations.FIELD_ASSOCIATION_POINTS
+    );
+
+    // Handle picking
+    const click = ({ x, y }) => {
+      if (!this.pickingModes.includes("click")) {
+        return;
+      }
+      const selection = this.pick(x, y, x, y);
+      this.vueCtx.emit("click", selection[0]);
+    };
+
+    this.debouncedHover = debounce(({ x, y }) => {
+      if (!this.pickingModes.includes("hover")) {
+        return;
+      }
+      const selection = this.pick(x, y, x, y);
+
+      // Guard against trigger of empty selection
+      if (this.lastSelection.length === 0 && selection.length === 0) {
+        return;
+      }
+      this.lastSelection = selection;
+
+      // Share the selection with the rest of the world
+      this.vueCtx.emit("hover", selection[0]);
+    }, 10);
+
+    const select = ({ selection }) => {
+      if (!this.pickingModes.includes("select")) {
+        return;
+      }
+      const [x1, x2, y1, y2] = selection;
+      const pickResult = this.pick(x1, y1, x2, y2);
+
+      // Share the selection with the rest of the world
+      this.vueCtx.emit("select", pickResult);
+    };
+
+    this.onClick = (e) => click(this.getScreenEventPositionFor(e));
+    this.onMouseMove = (e) =>
+      this.debouncedHover(this.getScreenEventPositionFor(e));
+    this.lastSelection = [];
+
+    this.onBoxSelectChange = select;
   }
 
   setContainer(container) {
@@ -292,6 +344,107 @@ export class LocalView {
 
   captureImage(format, opts) {
     return this.renderWindow.captureImages(format, opts)[0];
+  }
+
+  getScreenEventPositionFor(source) {
+    if (!this.container) {
+      return;
+    }
+    const bounds = this.container.getBoundingClientRect();
+    const [canvasWidth, canvasHeight] = this.openglRenderWindow.getSize();
+    const scaleX = canvasWidth / bounds.width;
+    const scaleY = canvasHeight / bounds.height;
+    const position = {
+      x: scaleX * (source.clientX - bounds.left),
+      y: scaleY * (bounds.height - source.clientY + bounds.top),
+      z: 0,
+    };
+    return position;
+  }
+
+  pick(x1, y1, x2, y2) {
+    this.selector.attach(this.openglRenderWindow, this.renderer);
+    if (!this.renderer) {
+      return;
+    }
+
+    this.selector.setArea(x1, y1, x2, y2);
+    this.previousSelectedData = null;
+    if (this.selector.captureBuffers()) {
+      this.selections = this.selector.generateSelection(x1, y1, x2, y2) || [];
+      if (x1 !== x2 || y1 !== y2) {
+        const frustrum = [
+          // near lower-left
+          Array.from(
+            this.openglRenderWindow.displayToWorld(x1, y1, 0, this.renderer)
+          ),
+          // far lower-left
+          Array.from(
+            this.openglRenderWindow.displayToWorld(x1, y1, 1, this.renderer)
+          ),
+          // near upper-left
+          Array.from(
+            this.openglRenderWindow.displayToWorld(x1, y2, 0, this.renderer)
+          ),
+          // far upper-left
+          Array.from(
+            this.openglRenderWindow.displayToWorld(x1, y2, 1, this.renderer)
+          ),
+          // near lower-right
+          Array.from(
+            this.openglRenderWindow.displayToWorld(x2, y1, 0, this.renderer)
+          ),
+          // far lower-right
+          Array.from(
+            this.openglRenderWindow.displayToWorld(x2, y1, 1, this.renderer)
+          ),
+          // near upper-right
+          Array.from(
+            this.openglRenderWindow.displayToWorld(x2, y2, 0, this.renderer)
+          ),
+          // far upper-right
+          Array.from(
+            this.openglRenderWindow.displayToWorld(x2, y2, 1, this.renderer)
+          ),
+        ];
+        const remoteIds = [];
+        this.selections.forEach((v) => {
+          const { prop } = v.getProperties();
+          const { remoteId } = prop.get("remoteId");
+          if (remoteId) {
+            remoteIds.push(remoteId);
+          }
+        });
+        return { frustrum, remoteIds };
+      }
+      const ray = [
+        Array.from(
+          this.openglRenderWindow.displayToWorld(x1, y1, 0, this.renderer)
+        ),
+        Array.from(
+          this.openglRenderWindow.displayToWorld(x1, y1, 1, this.renderer)
+        ),
+      ];
+      return this.selections.map((v) => {
+        const { prop, compositeID, displayPosition } = v.getProperties();
+
+        return {
+          worldPosition: Array.from(
+            this.openglRenderWindow.displayToWorld(
+              displayPosition[0],
+              displayPosition[1],
+              displayPosition[2],
+              this.renderer
+            )
+          ),
+          displayPosition,
+          compositeID, // Not yet useful unless GlyphRepresentation
+          ...prop.get("remoteId"),
+          ray,
+        };
+      });
+    }
+    return [];
   }
 
   beforeDelete() {

@@ -75,6 +75,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    pickingModes: {
+      type: Array,
+      default: () => [],
+    },
   },
   emits: [
     "resetCamera",
@@ -86,6 +90,10 @@ export default {
     "onImageCapture",
     //
     "BoxSelection",
+    // picking
+    "select",
+    "hover",
+    "click",
     // https://github.com/Kitware/vtk-js/blob/master/Sources/Rendering/Core/RenderWindowInteractor/index.js#L27-L67
     "StartAnimation",
     "Animation",
@@ -151,6 +159,7 @@ export default {
     // Create VTK stuff
     const view = new LocalView(
       props.contextName,
+      props.pickingModes,
       getArray,
       props.interactorEvents,
       { emit, nextTick, ready }
@@ -160,6 +169,10 @@ export default {
     const resizeObserver = new ResizeObserver(() => view.resize());
 
     function onBoxSelectChange({ container, selection }) {
+      if (props.pickingModes.includes("select")) {
+        view.onBoxSelectChange({ selection });
+        return;
+      }
       if (!props.boxSelection || !container) {
         return;
       }
@@ -179,6 +192,12 @@ export default {
     watch(
       () => props.interactorSettings,
       () => view.updateStyle(props.interactorSettings, onBoxSelectChange)
+    );
+    watch(
+      () => props.pickingModes,
+      () => {
+        view.pickingModes = props.pickingModes;
+      }
     );
     watch(
       () => props.viewState,
@@ -216,10 +235,7 @@ export default {
       view.beforeDelete();
 
       if (wsSubscription && client.value) {
-        client.value
-          .getConnection()
-          .getSession()
-          .unsubscribe(wsSubscription);
+        client.value.getConnection().getSession().unsubscribe(wsSubscription);
         wsSubscription = null;
       }
 
@@ -248,10 +264,13 @@ export default {
       view.setSynchronizedViewId(idChanged);
     };
     const resize = () => view.resize();
+    const { onClick, onMouseMove } = view;
     return {
       vtkContainer,
       onEnter,
       onLeave,
+      onClick,
+      onMouseMove,
       resetCamera,
       getCamera,
       setCamera,
@@ -265,6 +284,8 @@ export default {
             style="position:relative;width:100%;height:100%;"
             @mouseenter="onEnter"
             @mouseleave="onLeave"
+            @click="onClick"
+            @mousemove="onMouseMove"
         >
             <div
               ref="vtkContainer"
