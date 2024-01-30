@@ -49,10 +49,18 @@ export default {
       type: Boolean,
       default: false,
     },
+    pickingModes: {
+      type: Array,
+      default: () => [],
+    },
   },
   emits: [
     "onImageCapture",
     "BoxSelection",
+    // picking
+    "select",
+    "hover",
+    "click",
     // https://github.com/Kitware/vtk-js/blob/master/Sources/Rendering/Core/RenderWindowInteractor/index.js#L27-L67
     "StartAnimation",
     "Animation",
@@ -158,11 +166,15 @@ export default {
       interactorBoxSelection.onBoxSelectChange(({ container, selection }) => {
         if (container) {
           const { width, height } = container.getBoundingClientRect();
-          emit("BoxSelection", {
+          const event = {
             selection,
             size: [width, height],
             mode: "remote",
-          });
+          };
+          emit("BoxSelection", event);
+          if (props.pickingModes.includes("select")) {
+            emit("select", { ...event, action: "select" });
+          }
         }
       })
     );
@@ -306,17 +318,65 @@ export default {
       }
     );
     watch(
-      () => props.boxSelection,
-      (value) => {
-        interactorManipulator.setEnabled(value);
+      () => [props.pickingModes.includes("select"), props.boxSelection],
+      ([select, boxSelect]) => {
+        interactorManipulator.setEnabled(select || boxSelect);
+        view.getInteractorStyle().setEnabled(!select || props.enablePicking);
       }
     );
+
+    // Picking mode management
+
+    function getScreenEventPositionFor(source) {
+      const container = vtkContainer.value;
+      if (!container) {
+        return;
+      }
+      const bounds = container.getBoundingClientRect();
+      const [canvasWidth, canvasHeight] = view.getCanvasView().getSize();
+      const scaleX = canvasWidth / bounds.width;
+      const scaleY = canvasHeight / bounds.height;
+      const position = {
+        x: scaleX * (source.clientX - bounds.left),
+        y: scaleY * (bounds.height - source.clientY + bounds.top),
+        z: 0,
+      };
+      return {
+        position,
+        size: [canvasWidth, canvasHeight],
+        scale: [scaleX, scaleY],
+      };
+    }
+
+    function onClick(e) {
+      if (!props.pickingModes.includes("click")) {
+        return;
+      }
+      emit("click", {
+        mode: "remote",
+        action: "click",
+        ...getScreenEventPositionFor(e),
+      });
+    }
+    function onMouseMove(e) {
+      if (!props.pickingModes.includes("hover")) {
+        return;
+      }
+      emit("hover", {
+        mode: "remote",
+        action: "hover",
+        ...getScreenEventPositionFor(e),
+      });
+    }
 
     return {
       // data
       connected,
       // ref
       vtkContainer,
+      // picking
+      onClick,
+      onMouseMove,
       // methods
       render,
       resetCamera,
@@ -333,7 +393,7 @@ export default {
     };
   },
   template: `
-    <div style="position:relative;width:100%;height:100%;z-index:0;">
+    <div style="position:relative;width:100%;height:100%;z-index:0;" @click="onClick" @mousemove="onMouseMove">
       <div ref="vtkContainer" style="position:absolute;width:100%;height:100%;overflow:hidden;" />
       <slot style="display: none;"></slot>
     </div>
