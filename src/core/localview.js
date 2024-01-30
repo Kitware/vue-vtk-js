@@ -429,6 +429,7 @@ export class LocalView {
         const { prop, compositeID, displayPosition } = v.getProperties();
 
         return {
+          mode: "local",
           worldPosition: Array.from(
             this.openglRenderWindow.displayToWorld(
               displayPosition[0],
