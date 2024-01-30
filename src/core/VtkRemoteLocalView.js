@@ -1,4 +1,4 @@
-import { ref, inject, watch, computed } from "vue";
+import { ref, inject, watch, computed, toRefs } from "vue";
 
 import VtkRemoteView from "./VtkRemoteView";
 import VtkSyncView from "./VtkSyncView";
@@ -22,6 +22,10 @@ export default {
     "onRemoteImageCapture",
     //
     "BoxSelection",
+    // picking
+    "click",
+    "hover",
+    "select",
     // https://github.com/Kitware/vtk-js/blob/master/Sources/Rendering/Core/RenderWindowInteractor/index.js#L27-L67
     "StartAnimation",
     "Animation",
@@ -162,6 +166,10 @@ export default {
       // Only used at mount time
       type: Object,
     },
+    pickingModes: {
+      type: Array,
+      default: () => [],
+    },
   },
   setup(props, { emit }) {
     const trame = inject("trame");
@@ -227,6 +235,8 @@ export default {
       localRenderingReady.value = v;
     }
 
+    const { pickingModes } = toRefs(props);
+
     return {
       computedLocalRenderingReady,
       onReady,
@@ -242,12 +252,15 @@ export default {
       remoteStyle,
       emit,
       captureImage,
+      pickingModes,
     };
   },
   template: `
         <div style="position:relative;width:100%;height:100%;z-index:0;">
           <vtk-sync-view
             ref="localViewRef"
+
+            :pickingModes="pickingModes"
 
             :viewId="viewId"
             :wsClient="wsClient"
@@ -304,11 +317,17 @@ export default {
             @StartInteraction="emit('StartInteraction', $event)"
             @Interaction="emit('Interaction', $event)"
             @EndInteraction="emit('EndInteraction', $event)"
+
+            @click="emit('click', $event)"
+            @hover="emit('hover', $event)"
+            @select="emit('select', $event)"
           >
             <slot></slot>
           </vtk-sync-view>
           <vtk-remote-view
             ref="remoteViewRef"
+
+            :pickingModes="pickingModes"
 
             :viewId="viewId"
             :wsClient="wsClient"
@@ -327,6 +346,10 @@ export default {
             :enablePicking="enablePicking"
 
             @BoxSelection="emit('BoxSelection', $event)"
+
+            @click="emit('click', $event)"
+            @hover="emit('hover', $event)"
+            @select="emit('select', $event)"
           />
         </div>
   `,
