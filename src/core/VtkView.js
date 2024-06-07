@@ -153,6 +153,8 @@ export default {
     provide("view", view);
     const { onClick, onMouseMove } = view;
     const resetCamera = () => view.resetCamera();
+    const getCamera = () => view.getCamera();
+    const setCamera = (v) => view.setCamera(v);
     return {
       vtkContainer,
       onEnter,
@@ -160,6 +162,8 @@ export default {
       onClick,
       onMouseMove,
       resetCamera,
+      getCamera,
+      setCamera,
     };
   },
   template: `
