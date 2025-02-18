@@ -13,6 +13,7 @@ import VtkRemoteLocalView from "./core/VtkRemoteLocalView";
 import VtkRemoteView from "./core/VtkRemoteView";
 import VtkSyncView from "./core/VtkSyncView";
 import VtkView from "./core/VtkView";
+import VtkWebXRHelper from "./core/VtkWebXRHelper";
 
 export default {
   VtkAlgorithm,
@@ -31,4 +32,5 @@ export default {
   VtkSyncView,
   VtkLocalView: VtkSyncView,
   VtkView,
+  VtkWebXRHelper,
 };
