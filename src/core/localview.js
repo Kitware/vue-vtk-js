@@ -561,7 +561,6 @@ export class ClientView {
       .getActors()
       .forEach(({ setVisibility }) => setVisibility(false));
 
-    this.cubeAxes.setCamera(this.activeCamera);
     this.renderer.addActor(this.cubeAxes);
 
     const bbox = vtkBoundingBox.newInstance({ bounds: [0, 0, 0, 0, 0, 0] });
@@ -704,6 +703,15 @@ export class ClientView {
       }
       this.vueCtx.nextTick(this.render);
     }
+  }
+
+  setCubeAxesVisibility(isVisible) {
+    this.cubeAxes.setVisibility(isVisible);
+    this.cubeAxes
+      .getActors()
+      .forEach(({ setVisibility }) => setVisibility(isVisible));
+    this.cubeAxes.setCamera(isVisible ? this.activeCamera : null); // WebXRHelper compatibility (see PR #9)
+    this.vueCtx.nextTick(this.render);
   }
 
   updateStyle(settings) {
