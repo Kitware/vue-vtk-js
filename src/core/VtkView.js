@@ -124,6 +124,7 @@ export default {
       props.interactorEvents,
       { emit, nextTick }
     );
+    view.setCubeAxesVisibility(props.showCubeAxes);
     const { onEnter, onLeave, onKeyUp } = enableResetCamera(view);
     const resizeObserver = new ResizeObserver(() => view.resize());
 
@@ -149,12 +150,19 @@ export default {
       () => props.pickingModes,
       () => (view.pickingModes = props.pickingModes)
     );
+    watch(
+      () => props.showCubeAxes,
+      () => view.setCubeAxesVisibility(props.showCubeAxes)
+    );
 
     provide("view", view);
     const { onClick, onMouseMove } = view;
     const resetCamera = () => view.resetCamera();
     const getCamera = () => view.getCamera();
     const setCamera = (v) => view.setCamera(v);
+    const setCubeAxesVisibility = (v) => {
+      props.showCubeAxes = v;
+    };
     return {
       vtkContainer,
       onEnter,
@@ -164,6 +172,7 @@ export default {
       resetCamera,
       getCamera,
       setCamera,
+      setCubeAxesVisibility,
     };
   },
   template: `
