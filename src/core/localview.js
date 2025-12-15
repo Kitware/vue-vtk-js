@@ -325,7 +325,7 @@ export class LocalView {
     if (this.activeCamera) {
       const cameraProps = {};
       CAMERA_PROPS.forEach((name) => {
-        if (props[name]) {
+        if (props[name] !== undefined) {
           cameraProps[name] = props[name];
         }
       });
