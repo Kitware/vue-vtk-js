@@ -26,7 +26,7 @@
     "vue": "^2.7.0 || >=3.0.0"
   },
   "devDependencies": {
-    "semantic-release": "19.0.2",
+    "semantic-release": "25.0.2",
     "@rushstack/eslint-patch": "^1.1.4",
     "@vue/eslint-config-prettier": "^7.0.0",
     "eslint": "^8.33.0",
