@@ -30,6 +30,7 @@ jobs:
       - name: Release
         env:
            NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           git config --global user.name "Github Actions"
           git config --global user.email "sebastien.jourdain@kitware.com"
