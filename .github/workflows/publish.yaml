@@ -7,6 +7,7 @@ on:
 jobs:
   publish:
     name: Publish
+    environment: publish
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -22,9 +23,6 @@ jobs:
       - name: Build
         run: npm run build
       - name: Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           git config --global user.name "Github Actions"
           git config --global user.email "sebastien.jourdain@kitware.com"
